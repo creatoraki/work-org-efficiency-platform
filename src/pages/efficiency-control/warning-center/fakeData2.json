@@ -1,0 +1,30 @@
+[
+	{
+		"id": 1,
+		"receiver": "冯雪",
+		"remindTime": "2025-12-11 10:00:00",
+		"content": "已预警3天1小时0分0秒，请尽快查阅处理！",
+		"operator": "周莲武"
+	},
+	{
+		"id": 2,
+		"receiver": "冯雪",
+		"remindTime": "2025-12-11 12:00:00",
+		"content": "全口径收付营收",
+		"operator": "周莲武"
+	},
+	{
+		"id": 3,
+		"receiver": "冯靖宇",
+		"remindTime": "2025-12-11 13:00:00",
+		"content": "综合收缴率",
+		"operator": "周莲武"
+	},
+	{
+		"id": 4,
+		"receiver": "冯靖宇",
+		"remindTime": "2025-12-11 14:00:00",
+		"content": "全口径收付营收",
+		"operator": "郑潇予"
+	}
+]

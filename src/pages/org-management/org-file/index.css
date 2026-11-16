@@ -1,0 +1,77 @@
+/* 基础样式 */
+.orgfile-container {
+	height: 100%;
+	width: 100%;
+	display: grid;
+	min-height: 0;
+	min-width: 0;
+	grid-template-columns: 390px 1fr;
+	grid-template-rows: 1fr;
+	/* overflow: hidden; */
+}
+
+/* 折叠状态下的 grid 布局 */
+.orgfile-container.has-folded-org-left {
+	grid-template-columns: 18px 1fr;
+}
+
+.orgfile-left {
+	overflow: hidden;
+	padding: 10px;
+	grid-column: 1;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr;
+}
+
+.orgfile-middle {
+	overflow: hidden;
+	overflow-x: auto;
+	min-width: 0;
+	width: 100%;
+	padding: 10px;
+	grid-column: 2;
+	display: grid;
+	gap: 20px;
+	grid-template-rows: 3fr 2fr 2fr;
+}
+
+/* 小屏：< 768px */
+@media (max-width: 768px) {
+	.orgfile-container {
+		grid-template-columns: 250px 100%;
+		grid-template-rows: 1fr 1fr;
+	}
+
+	.orgfile-container.has-folded-org-left {
+		grid-template-columns: 18px 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+
+	.orgfile-left {
+		grid-row: 1 / span 2;
+		grid-column: 1;
+		height: 100%;
+		min-height: 0;
+	}
+
+	.orgfile-middle {
+		grid-row: 1;
+		grid-column: 2;
+		display: grid;
+		grid-template-rows: 300px 140px minmax(180px, 1fr);
+		grid-template-columns: 1fr;
+		min-height: 0;
+		min-width: 0;
+		min-height: 760px;
+	}
+}
+
+/* 应用自定义滚动条样式到 orgfile-container */
+
+.orgFileDescriptions {
+	.ant-descriptions-item-label::after {
+		content: none !important;
+		/* 或者 display: none; */
+	}
+}

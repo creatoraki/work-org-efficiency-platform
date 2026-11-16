@@ -1,0 +1,77 @@
+.ai-modal-tabs .ant-tabs-content-holder .ant-tabs-content {
+	height: 100%;
+}
+
+.ai-modal-tabs .ant-tabs-content-holder .ant-tabs-content .ant-tabs-tabpane {
+	height: 100%;
+}
+
+.ai-modal-tabs .ant-tabs-nav .ant-tabs-tab {
+	background-color: #e4e7ed;
+	border: 1px solid transparent;
+}
+
+.ai-modal-tabs .ant-tabs-nav .ant-tabs-tab-active {
+	background-color: #fff;
+	border: 1px solid #e4e7ed;
+}
+
+/* 隐藏所有 Select tag 的关闭按钮 */
+.matchingCode-select.ant-select-multiple .ant-select-selection-item-remove {
+	display: none !important;
+}
+
+/* 或只针对特定 Select */
+.matchingCode-select.my-readonly-tags .ant-select-selection-item-remove {
+	display: none !important;
+}
+
+/* 或只针对特定 Select */
+.matching-table .ant-table-body > table > tbody > tr > td:first-child,
+.matching-table .ant-table-tbody > .ant-table-row > td:first-child {
+	background-color: #e4e7ed !important;
+}
+
+.matching-compare-table .ant-table-tbody > .ant-table-row-level-0:first-child > td:first-child,
+.matching-compare-table .ant-table-tbody > .ant-table-row-level-0:nth-child(2) > td:first-child,
+.matching-compare-table .ant-table-tbody > .ant-table-row-level-0:last-child > td:first-child {
+	background-color: #e4e7ed !important;
+}
+
+.matching-table .ant-table-thead > tr > th,
+.matching-compare-table .ant-table-thead > tr > th {
+	background-color: #e4e7ed !important;
+}
+
+/* AI modal header background */
+.ai-modal-header {
+	width: 100%;
+	height: 90px;
+	background-image: url("../../../../assets/ai-bg@2x.png");
+	background-size: cover;
+	background-position: top center;
+	background-repeat: no-repeat;
+	z-index: 10;
+}
+
+.matchingCode-select > .ant-select-selector {
+	background-color: #fff !important;
+}
+
+.matchingCode-select
+	> .ant-select-selector
+	> .ant-select-selection-wrap
+	> .ant-select-selection-overflow
+	> .ant-select-selection-overflow-item
+	> .ant-select-selection-item {
+	color: #323233;
+	background-color: #f0f2f5;
+}
+
+.gradient-text {
+	height: 60px;
+	background: linear-gradient(90deg, #0075ff, #7500ff);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}

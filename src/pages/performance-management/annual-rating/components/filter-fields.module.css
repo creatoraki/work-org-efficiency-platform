@@ -1,0 +1,11 @@
+/**
+ * Input / Select 的内部左内边距没有可用的 styles 语义键，只能用后代选择器覆盖。
+ * 标签与内容的 12px 间距由组件层的 mr-3 唯一控制。
+ *
+ * 叠加 .ant-select.ant-select-single 提高特异性，避免使用 !important。
+ */
+
+.labeledField :global(.ant-input-affix-wrapper),
+.labeledSelect :global(.ant-select.ant-select-single) :global(.ant-select-selector) {
+	padding-left: 0;
+}

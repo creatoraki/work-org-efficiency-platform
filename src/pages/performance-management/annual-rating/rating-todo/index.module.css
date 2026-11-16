@@ -1,0 +1,17 @@
+/**
+ * 评级待办表格样式
+ *
+ * 这里覆盖表头字重与表体正文颜色，其余颜色、字号、间距通过 ConfigProvider 的 Table token 覆盖。
+ */
+
+.todoTable {
+	/* 表头使用 Medium(500)，AntD 默认 600 偏粗 */
+	:global(.ant-table-thead) > tr > th {
+		font-weight: 500;
+	}
+
+	/* 表体正文使用次强调文字色 #606266，而非 AntD 默认的近黑色 */
+	:global(.ant-table-tbody) > tr > td {
+		color: #606266;
+	}
+}

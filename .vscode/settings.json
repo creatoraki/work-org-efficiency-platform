@@ -1,0 +1,22 @@
+{
+	// 使用eslint规则
+	"eslint.enable": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"i18n-ally.localesPaths": ["src/locales"],
+	"claude.projectSpecific": {
+		"language": "typescript",
+		"framework": "react",
+		"lintRules": "eslint",
+		"codeStyle": "eslint"
+	},
+	"claude.projectAnalysis": {
+		"enabled": true,
+		"analysisDepth": "deep",
+		"includeTests": true,
+		"analyzeDependencies": true,
+		"generateDocumentation": true,
+		"trackTechnicalDebt": true
+	}
+}

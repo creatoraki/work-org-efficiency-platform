@@ -1,0 +1,48 @@
+[
+	{
+		"org_name": "绿城服务集团",
+		"org_code": 1,
+		"parent_org_code": 0,
+		"org_tag": "TOP",
+		"children": [
+			{
+				"org_name": "浙东区域公司",
+				"org_code": 2,
+				"parent_org_code": 1,
+				"org_tag": "Region",
+				"children": [
+					{
+						"org_name": "舟山地区",
+						"org_code": 3,
+						"parent_org_code": 2,
+						"org_tag": "AREA",
+						"children": [
+							{
+								"org_name": "定海项目群",
+								"org_code": 4,
+								"parent_org_code": 3,
+								"org_tag": "GROUP",
+								"children": [
+									{
+										"org_name": "舟山秀水湾度假村服务中心服务中心",
+										"org_code": 5,
+										"parent_org_code": 4,
+										"org_tag": "PROJ",
+										"statusText": "在管"
+									},
+									{
+										"org_name": "岱山蔚蓝公寓服务中心",
+										"org_code": 6,
+										"parent_org_code": 4,
+										"org_tag": "PROJ",
+										"statusText": "在管"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	}
+]

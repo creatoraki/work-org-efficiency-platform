@@ -1,0 +1,35 @@
+/**
+ * 计划查看抽屉 · 固定 Tab 布局
+ *
+ * Tab 栏固定在抽屉顶部、不参与滚动；每个 Tab 的内容区自行滚动
+ * （人员清单：左树内部滚动 + 右侧内容滚动）。
+ */
+
+.viewDrawer {
+	:global(.ant-drawer-body) {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		padding: 0;
+	}
+
+	:global(.ant-tabs) {
+		flex: 1;
+		min-height: 0;
+		padding: 0 24px;
+	}
+
+	:global(.ant-tabs-nav) {
+		margin-top: 8px;
+		margin-bottom: 12px;
+	}
+
+	:global(.ant-tabs-content-holder) {
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	:global(.ant-tabs-tabpane) {
+		height: 100%;
+	}
+}

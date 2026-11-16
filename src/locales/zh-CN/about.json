@@ -1,0 +1,13 @@
+{
+	"aboutProject": "关于项目",
+	"descriptions": "组织效能管控平台是一个基于 React Hooks、Vite 和 TypeScript 的企业级中后台管理系统。平台专注于提升组织运营效率，提供全面的人员管理、智能标签体系、灵活规则配置、权限管控等核心功能。",
+	"projectMessage": "项目信息",
+	"version": "版本",
+	"lastBuildTime": "最后构建时间",
+	"license": "开源许可协议",
+	"previewAddress": "预览地址",
+	"documentAddress": "文档地址",
+	"author": "作者",
+	"dependencies": "生产依赖",
+	"devDependencies": "开发依赖"
+}

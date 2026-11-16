@@ -1,0 +1,13 @@
+.greenGlow {
+	background: rgba(0, 255, 60, 0.04);
+	filter: blur(88.82177734375px);
+}
+
+.blueGlow {
+	background: rgba(0, 117, 255, 0.1);
+	filter: blur(88.82177734375px);
+}
+
+.bottomFade {
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 78%, #fff 100%);
+}

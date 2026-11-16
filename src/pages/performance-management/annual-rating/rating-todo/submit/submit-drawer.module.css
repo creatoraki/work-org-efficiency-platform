@@ -1,0 +1,21 @@
+/**
+ * 提报抽屉表格样式
+ *
+ * 等级分布表头/表体均 36px；
+ * 提报名单表头 36px、表体 46px（由 32px 输入控件 + 上下 6.5px 内边距撑起）；
+ * 表体正文使用次强调文字色 #606266。
+ */
+
+.submitTable {
+	/* 表头使用 Medium(500)，AntD 默认 600 偏粗 */
+	:global(.ant-table-thead) > tr > th {
+		font-weight: 500;
+		white-space: nowrap;
+	}
+
+	/* 表体正文使用次强调文字色 #606266；固定列宽下不允许折行 */
+	:global(.ant-table-tbody) > tr > td {
+		color: #606266;
+		white-space: nowrap;
+	}
+}

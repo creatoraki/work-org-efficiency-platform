@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+coverage
+storybook-static
+.vite
+.turbo
+.cache
+public/mock
+
+# 锁定文件由 pnpm 独占管理，不参与格式化，避免与 pnpm 写出的格式互相覆盖
+pnpm-lock.yaml
+package-lock.json
+yarn.lock

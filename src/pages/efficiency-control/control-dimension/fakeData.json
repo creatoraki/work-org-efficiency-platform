@@ -1,0 +1,51 @@
+[
+	{
+		"controlDimension": "人效管控",
+		"warningContent": "人均营收低于目标值",
+		"warningSuggestion": "1.一周内输出<<项目人员配置方案>>就EHR编制是否存在超编、储备等情况做出说明与整改计做出说明与整改计做出说明与整改计做出说明与",
+		"relatedRule": "人均营收低于目标值",
+		"createTime": "2024-11-09 18:49:25"
+	},
+	{
+		"controlDimension": "人岗匹配",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"warningSuggestion": "1.一周内出具人员配置方案，根据金盘、金盾、精工1.一周内出具人员配置方案，根据金盘、金盾、精工等系统，核定预算人员编制，复盘超编情做出说明与整改计做出说明与整改计做出说明与整改。2.一",
+		"relatedRule": "当月实际在职人数当月管控人",
+		"createTime": "2024-11-08 17:32:46"
+	},
+	{
+		"controlDimension": "人效管控",
+		"warningContent": "人均营收低于目标值",
+		"warningSuggestion": "1.一周内输出<<项目人员配置方案>>就EHR编制是周内出具人员配置方案，根据金盘、金盾、精工等系统，核定预算人员编制，复盘超编情做出说明与整改计做出说明与整改计做出说明与整改。",
+		"relatedRule": "人均营收低于目标值",
+		"createTime": "2024-11-08 06:34:10"
+	},
+	{
+		"controlDimension": "人岗匹配",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"warningSuggestion": "1.一周内出具人员配置方案，根据金盘、金盾、精计做出说明与整改计做出说明与整改计做出说明与整系统，核定预算人员编制，复盘超编情做出说明与",
+		"relatedRule": "当月实际在职人数当月管控人",
+		"createTime": "2024-11-08 06:34:10"
+	},
+	{
+		"controlDimension": "人效管控",
+		"warningContent": "人均营收低于目标值",
+		"warningSuggestion": "1.一周内输出<<项目人员配置方案>>就EHR编制是整改计做出说明与整改计做出说明与整改计做出说明与整改计做出说明与整改计做出说明与",
+		"relatedRule": "人均营收低于目标值",
+		"createTime": "2024-11-07 22:44:22"
+	},
+	{
+		"controlDimension": "人岗匹配",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"warningSuggestion": "1.一周内出具人员配置方案，根据金盘、金盾、精工等系统，核定预算人员编制，复盘超编情做出说明与整改计做出说明与整改计做出说明与整改。2....",
+		"relatedRule": "当月实际在职人数当月管控人",
+		"createTime": "2024-11-07 10:39:11"
+	},
+	{
+		"controlDimension": "人岗匹配",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"warningSuggestion": "1.一周内出具人员配置方案，根据金盘、金盾、精工等系统，核定预算人员编制，复盘超编情做出说明与整改计做出说明与整改计做出说明与整",
+		"relatedRule": "当月实际在职人数当月管控人",
+		"createTime": "2024-11-09 18:49:25"
+	}
+]

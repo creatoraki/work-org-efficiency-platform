@@ -1,0 +1,1 @@
+export { BasicInfoBar } from "./BasicInfoBar";

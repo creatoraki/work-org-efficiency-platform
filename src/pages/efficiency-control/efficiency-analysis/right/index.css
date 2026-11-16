@@ -1,0 +1,53 @@
+.comparedTable .ant-table-thead {
+	background: linear-gradient(90deg, rgba(225, 255, 240, 0.5) 0%, rgba(240, 233, 255, 0.5) 100%);
+}
+
+.comparedTable .ant-table-thead .ant-table-cell {
+	background: transparent !important;
+}
+
+.comparedTable .ant-table-thead .ant-table-cell,
+.showTable .ant-table-thead .ant-table-cell {
+	color: #323233 !important;
+}
+
+.showTable .ant-table-tbody .ant-table-cell {
+	color: #606266 !important;
+}
+
+.compare-tab-segmented {
+	background-color: #f5f7fa;
+}
+
+.compare-tab-segmented > .ant-segmented-group > .ant-segmented-item > .ant-segmented-item-label {
+	font-size: 12px;
+}
+
+.showTable .ant-table-cell {
+	padding: 4px !important;
+}
+
+/* 确保 analysis-right 的子元素不会撑开容器 */
+.analysis-right > * {
+	min-width: 0;
+	overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+	.compare-tab-segmented
+		> .ant-segmented-group
+		> .ant-segmented-item
+		> .ant-segmented-item-label {
+		font-size: 10px;
+	}
+}
+
+@media (max-height: 1000px) {
+	.comparedTable .ant-table-cell {
+		padding: 4px !important;
+	}
+
+	.showTable .ant-table-cell {
+		padding: 4px !important;
+	}
+}

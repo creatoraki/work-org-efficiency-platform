@@ -1,0 +1,60 @@
+/**
+ * 组织树样式覆盖
+ *
+ * 基于 antd Tree 原生 showLine 渲染（官方示例用法），覆盖以下规格：
+ * - 行文字 16px / 24px
+ * - 每级缩进 16px（antd 默认 24px）
+ * - 展开器为 antd 内置 +/− 方框图标，叶子节点为原生折线端点
+ * - 行间距 8px
+ */
+
+.orgTree {
+	:global(.ant-tree-treenode) {
+		padding-bottom: 8px;
+	}
+
+	:global(.ant-tree-node-content-wrapper) {
+		font-size: 16px;
+		line-height: 24px;
+	}
+
+	:global(.ant-tree-indent-unit) {
+		width: 16px;
+	}
+
+	/**
+	 * 缩进改窄后，antd 的连线仍按默认 24px 列宽取中点（12px），
+	 * 会把竖线推到 16px 列的偏左位置，与展开器方框错位。
+	 * 这里把连线、叶子端点、展开器统一收回到 16px 列中心（8px）。
+	 */
+	&:global(.ant-tree-show-line) {
+		:global(.ant-tree-indent-unit)::before {
+			inset-inline-end: 8px;
+			border-inline-end: 1px solid #dcdfe6;
+		}
+
+		:global(.ant-tree-switcher-leaf-line)::before,
+		:global(.ant-tree-switcher-leaf-line)::after {
+			border-color: #dcdfe6;
+		}
+
+		/* 叶子折线的竖线与展开器方框同在 16px 列中心，横线按 8px 收口 */
+		:global(.ant-tree-switcher-leaf-line)::before {
+			inset-inline-end: 8px;
+		}
+
+		:global(.ant-tree-switcher-leaf-line)::after {
+			width: 8px;
+		}
+
+		:global(.ant-tree-switcher) {
+			width: 16px;
+		}
+
+		/* antd 内置方框展开器：14px 方框、文字色 #606266 */
+		:global(.ant-tree-switcher-line-icon) {
+			color: #606266;
+			font-size: 14px;
+		}
+	}
+}

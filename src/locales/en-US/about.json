@@ -1,0 +1,13 @@
+{
+	"aboutProject": "About Project",
+	"descriptions": "Organization Efficiency Management Platform is an enterprise-level mid-to-backend management system based on React Hooks, Vite, and TypeScript. The platform focuses on improving organizational operational efficiency, providing comprehensive personnel management, intelligent labeling systems, flexible rule configuration, permission control and other core functions.",
+	"projectMessage": "Project Message",
+	"version": "Version",
+	"lastBuildTime": "Last Build Time",
+	"license": "License",
+	"previewAddress": "Preview URL",
+	"documentAddress": "Documentation URL",
+	"author": "Author",
+	"dependencies": "Prod Dependencies",
+	"devDependencies": "Dev Dependencies"
+}

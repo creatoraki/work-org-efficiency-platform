@@ -1,0 +1,28 @@
+.gs-button {
+	font-weight: 600;
+	border-radius: 8px;
+}
+
+.gs-button--primary.ant-btn {
+	box-shadow: 0 6px 18px rgba(22, 119, 255, 0.18);
+}
+
+.gs-button--secondary.ant-btn {
+	color: #1677ff;
+	background-color: #f4f8ff;
+	border-color: #d6e4ff;
+}
+
+.gs-button--ghost.ant-btn {
+	color: #1677ff;
+	background-color: transparent;
+	border-color: #1677ff;
+}
+
+.gs-button--text.ant-btn {
+	color: #1677ff;
+}
+
+.gs-button--block.ant-btn {
+	width: 100%;
+}

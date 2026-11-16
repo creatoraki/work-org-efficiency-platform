@@ -1,0 +1,67 @@
+.proj-compliance-table {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.proj-compliance-table .ant-table-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.proj-compliance-table .ant-table-body {
+	flex: 1;
+	overflow-y: auto !important;
+	min-height: 0;
+}
+
+.proj-compliance-table .ant-table-thead .ant-table-cell {
+	/* font-weight: 500 !important; */
+	color: #323233 !important;
+}
+
+.proj-compliance-table .ant-table-tbody .ant-table-cell {
+	/* font-weight: 500 !important; */
+	color: #606266 !important;
+}
+
+.scrollbar {
+	&::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 5px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 5px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 5px;
+		background: #e4e7ed;
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background: #c0c4cc;
+	}
+
+	&::-webkit-scrollbar-thumb:horizontal:hover {
+		cursor: ew-resize;
+	}
+
+	&::-webkit-scrollbar-thumb:vertical:hover {
+		cursor: ns-resize;
+		/* 上下双向箭头 */
+	}
+
+	&::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		border-radius: 5px;
+		background: #f5f7fa;
+	}
+}
+
+@media (max-height: 1000px) {
+	.proj-compliance-table .ant-table-cell {
+		padding: 4px !important;
+	}
+}

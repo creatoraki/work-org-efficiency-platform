@@ -1,0 +1,165 @@
+/* 基础样式 */
+.dashboard {
+	min-height: 0;
+	min-width: 0;
+	display: grid;
+	grid-template-columns: 22fr 30fr 40fr;
+	/* grid-template-columns: 350px 1fr 1fr; */
+	/* 左 240px | 中 1fr | 右 1fr */
+	grid-template-rows: auto;
+	/* border: 1px solid red; */
+	overflow: auto;
+	gap: 0;
+}
+
+/* 折叠状态下的 grid 布局 */
+.dashboard.has-folded-analysis-left {
+	grid-template-columns: 18px 30fr 40fr;
+}
+
+/* 应用自定义滚动条样式到 dashboard */
+.scrollbar {
+	&::-webkit-scrollbar {
+		/*滚动条整体样式*/
+		width: 6px;
+		/*高宽分别对应横竖滚动条的尺寸*/
+		height: 6px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		/*滚动条里面小方块*/
+		border-radius: 6px;
+		background: #e4e7ed;
+	}
+
+	&::-webkit-scrollbar-thumb:hover {
+		background: #c0c4cc;
+	}
+
+	&::-webkit-scrollbar-thumb:horizontal:hover {
+		cursor: ew-resize;
+	}
+
+	&::-webkit-scrollbar-thumb:vertical:hover {
+		cursor: ns-resize;
+		/* 上下双向箭头 */
+	}
+
+	&::-webkit-scrollbar-track {
+		/*滚动条里面轨道*/
+		border-radius: 2px;
+		background: #f5f7fa;
+	}
+}
+
+.analysis-left {
+	grid-column: 1;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr;
+}
+
+.analysis-middle {
+	grid-column: 2;
+	display: grid;
+	grid-template-rows: 300px minmax(140px, 170px) minmax(180px, 1fr);
+	grid-template-columns: 1fr;
+}
+
+.analysis-right {
+	grid-column: 3;
+	min-height: 0;
+	display: grid;
+	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
+	height: 100%;
+	overflow-y: auto;
+}
+
+.analysis-right.grid-rows-1 {
+	grid-template-rows: 1fr;
+}
+
+.analysis-right.grid-rows-2 {
+	grid-template-rows: 1fr 1fr;
+}
+
+/* 小屏：< 768px */
+@media (max-width: 768px) {
+	.dashboard {
+		grid-template-columns: 250px 100%;
+		grid-template-rows: 1fr 1fr;
+	}
+
+	.dashboard.has-folded-analysis-left {
+		grid-template-columns: 18px 1fr;
+		grid-template-rows: 1fr 1fr;
+	}
+
+	.analysis-left {
+		grid-row: 1 / span 2;
+		grid-column: 1;
+		height: 100%;
+		min-height: 0;
+	}
+
+	.analysis-middle {
+		grid-row: 1;
+		grid-column: 2;
+		display: grid;
+		grid-template-rows: 300px 140px minmax(180px, 1fr);
+		grid-template-columns: 1fr;
+		min-height: 0;
+		min-width: 0;
+		min-height: 760px;
+	}
+
+	.analysis-right {
+		grid-row: 2;
+		grid-column: 2;
+		height: auto;
+		min-height: 760px;
+		width: 100%;
+		display: grid;
+	}
+}
+
+/* @media (max-width: 1200px) {
+    .dashboard {
+        grid-template-columns: 1fr 60%;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .dashboard.has-folded-analysis-left {
+        grid-template-columns: 18px 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .analysis-left {
+        grid-row: 1 / span 2;
+        grid-column: 1;
+        height: 100%;
+        min-height: 0;
+    }
+
+    .analysis-middle {
+        grid-row: 1;
+        grid-column: 2;
+        display: grid;
+        grid-template-rows: 300px minmax(150px, 170px) minmax(180px, 1fr);
+        grid-template-columns: 1fr;
+        min-height: 0;
+        min-width: 0;
+        min-height: 760px;
+    }
+
+    .analysis-right {
+        grid-row: 2;
+        grid-column: 2;
+        height: auto;
+        min-height: 760px;
+        width: 100%;
+        display: grid;
+
+    }
+} */

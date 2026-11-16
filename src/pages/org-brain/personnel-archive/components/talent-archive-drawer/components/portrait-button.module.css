@@ -1,0 +1,47 @@
+/**
+ * 人才画像按钮 - mask + mask-composite 实现渐变圆角边框
+ */
+
+.portraitBtn {
+	z-index: 0;
+	border-radius: 8px;
+	background: linear-gradient(
+		152deg,
+		rgba(0, 117, 255, 0.1) 46.53%,
+		rgba(117, 0, 255, 0.1) 128.94%
+	);
+	box-shadow: 0 0 4px 0 rgba(255, 255, 255, 0.8) inset;
+	backdrop-filter: blur(2px);
+}
+
+.portraitBtn::before {
+	display: block;
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	border-radius: 8px;
+	border: 1px solid transparent;
+	background: linear-gradient(90deg, #8bd2ff 0%, #f2cbff 100%) border-box;
+	mask:
+		linear-gradient(#fff 0 0) padding-box,
+		linear-gradient(#fff 0 0);
+	-webkit-mask:
+		linear-gradient(#fff 0 0) padding-box,
+		linear-gradient(#fff 0 0);
+	mask-composite: exclude;
+	-webkit-mask-composite: xor;
+	pointer-events: none;
+}
+
+.portraitBtnIcon {
+	color: #0075ff;
+}
+
+.portraitBtnText {
+	background: linear-gradient(90deg, #0075ff 0%, #7500ff 100%);
+	text-wrap: nowrap;
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}

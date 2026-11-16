@@ -1,0 +1,211 @@
+/* @layer antd, editor; */
+
+/* simplebar */
+@import url(simplebar-react/dist/simplebar.min.css) layer(simplebar);
+
+/* 将 Tailwind CSS 的基础样式（也称为 "base" 样式）导入到当前文件中，包括一些基本的 HTML 元素样式、重置元素默认样式等。 */
+@import "tailwindcss/base";
+
+/* 导入 Tailwind CSS 的组件样式，包括预定义的按钮、表格、表单、卡片等组件样式。 */
+@import "tailwindcss/components";
+
+/* 导入 Tailwind CSS 的实用类，这些类通常用于添加与布局、间距、响应式设计等相关的样式，使得可以快速构建出复杂的页面 */
+@import "tailwindcss/utilities";
+
+@font-face {
+	font-family: "PingFang SC";
+	src: url("../assets/fonts/PingFangSC-Medium.ttf") format("truetype");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+html,
+body {
+	font-family:
+		"PingFang SC",
+		"PingFang",
+		-apple-system,
+		BlinkMacSystemFont,
+		"Segoe UI",
+		"Helvetica Neue",
+		Arial,
+		"Noto Sans",
+		"Apple Color Emoji",
+		"Segoe UI Emoji",
+		"Segoe UI Symbol",
+		"Noto Color Emoji",
+		sans-serif;
+}
+
+/* simplebar */
+@layer simplebar {
+	.simplebar-scrollbar::before {
+		background-color: #909399;
+	}
+
+	.simplebar-content {
+		height: 100%;
+	}
+}
+
+/**
+ * Drawer 关闭按钮统一放头部右侧
+ *
+ * antd 官方提供了 ConfigProvider.drawer 全局配置（见 src/app.tsx），但 5.29 的
+ * DrawerPanel 只从组件 props 读取 closable.placement，全局配置不改变按钮位置。
+ * 这里按官方 closable.placement="end" 的同一视觉结果补齐：关闭按钮在标题区内
+ * 排到末尾并右靠。
+ *
+ * 临时兼容：antd 升级并确认全局配置生效后，可删除本段，仅保留 ConfigProvider 配置。
+ */
+/* 叠加 .ant-drawer-close 使特异性高于 antd 的
+   `.ant-drawer .ant-drawer-close:not(.ant-drawer-close-end)`（0,3,0），
+   避免运行时注入顺序导致 margin-inline-end 覆盖失效 */
+.ant-drawer .ant-drawer-header-title > .ant-drawer-close.ant-drawer-close {
+	order: 1;
+	margin-inline-start: auto;
+	/* antd 给非 close-end 的关闭按钮默认加了 margin-inline-end: 8px（左置时与标题留距），
+	   我们把它排到右侧后该外边距会残留在右边，这里清零以移除多余间距 */
+	margin-inline-end: 0;
+}
+
+@keyframes rotateFlipIn {
+	0% {
+		transform: perspective(1500px) rotateY(90deg);
+		opacity: 0;
+	}
+
+	100% {
+		transform: perspective(1500px) rotateY(0);
+		opacity: 1;
+	}
+}
+
+.animate-slide-in {
+	animation: rotateFlipIn 0.6s ease-out forwards;
+	transform-origin: center;
+	backface-visibility: hidden;
+}
+
+html.color-blind-mode {
+	@apply invert;
+}
+
+html.gray-mode {
+	@apply grayscale;
+}
+
+/* 会影响所有 Antd 表头 */
+.ant-table-thead > tr > th {
+	background: #f0f2f5 !important;
+}
+
+/* 作用域选择器：仅影响你包裹表格的容器下的滚动区域 */
+.ant-table-body {
+	scrollbar-width: thin;
+	/* Firefox: 窄滚动条 */
+	scrollbar-color: #e5e7eb #f3f4f6;
+	/* Firefox: thumb color / track color */
+}
+
+/* WebKit 浏览器（Chrome, Edge, Safari） */
+.ant-table-body::-webkit-scrollbar {
+	width: 10px;
+	/* 垂直滚动条宽度 */
+	height: 10px;
+	/* 横向滚动条高度（若存在） */
+}
+
+.ant-table-body::-webkit-scrollbar-track {
+	background: #f3f4f6;
+	/* 轨道颜色 */
+	border-radius: 8px;
+}
+
+.ant-table-body::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, #e5e7eb, #6b7280);
+	/* 渐变拇指 */
+	border-radius: 8px;
+	box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.25);
+	border: 2px solid rgba(255, 255, 255, 0.6);
+	/* 让 thumb 有“内边距”效果 */
+}
+
+.ant-table-body::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(180deg, #6b7280, #e5e7eb);
+}
+
+/* 可选：当表格高度较小时禁用自定义滚动条的极端效果 */
+@media (max-height: 480px) {
+	.ant-table-body::-webkit-scrollbar {
+		width: 8px;
+	}
+}
+
+.site-tree-search-value {
+	font-weight: 600;
+	color: rgb(var(--oo-colorPrimary));
+}
+
+.ant-pro-query-filter-collapse-button {
+	display: none !important;
+}
+
+/* AdjustHistoryDrawer left tree */
+.left-tree-wrapper ::-webkit-scrollbar {
+	display: none;
+}
+
+.left-tree-wrapper {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	overflow-x: hidden;
+}
+
+.left-tree-wrapper .ant-tree,
+.left-tree-wrapper .ant-tree-list,
+.left-tree-wrapper .ant-tree-list-holder {
+	overflow-x: hidden;
+}
+
+.left-tree-wrapper .ant-tree-indent-unit {
+	width: 12px !important;
+}
+
+.left-tree-wrapper .ant-tree-switcher {
+	width: 16px !important;
+}
+
+.left-tree-wrapper .ant-tree-node-content-wrapper {
+	padding: 0 4px !important;
+	min-width: 0;
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+}
+
+.left-tree-wrapper .ant-tree-node-content-wrapper.ant-tree-node-selected {
+	background-color: transparent !important;
+}
+
+.left-tree-wrapper .ant-tree-node-content-wrapper.ant-tree-node-selected .ant-tree-title {
+	color: rgba(0, 117, 255, 1) !important;
+}
+
+.left-tree-wrapper .ant-tree-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	display: block;
+	width: 100%;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.left-tree-wrapper .ant-tree-treenode {
+	display: flex;
+	align-items: center;
+	padding-bottom: 4px;
+}

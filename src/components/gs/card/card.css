@@ -1,0 +1,36 @@
+.gs-card {
+	border-radius: 12px;
+	overflow: hidden;
+}
+
+.gs-card--default {
+	border: 1px solid #f0f0f0;
+}
+
+.gs-card--bordered {
+	border: 1px solid #d9d9d9;
+}
+
+.gs-card--shadow {
+	border: none;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	transition: all 0.3s ease;
+}
+
+.gs-card--shadow:hover {
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+	transform: translateY(-2px);
+}
+
+.gs-card .ant-card-head {
+	border-bottom: 1px solid #f0f0f0;
+}
+
+.gs-card .ant-card-head-title {
+	font-weight: 600;
+	font-size: 16px;
+}
+
+.gs-card .ant-card-body {
+	padding: 20px;
+}

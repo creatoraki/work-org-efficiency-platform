@@ -1,0 +1,16 @@
+# pnpm 配置（pnpm 10 起 settings 从 package.json 的 "pnpm" 字段 / .npmrc 迁移到本文件）
+# 参考：https://pnpm.io/settings
+#
+# 本文件只承载 pnpm 配置，不声明 packages，因此项目仍是单包应用。
+
+# 依赖安装脚本白名单
+# pnpm 默认拦截依赖的构建脚本；strictDepBuilds 为 true（默认）时，
+# 未审批的构建脚本会以 ERR_PNPM_IGNORED_BUILDS 让 `pnpm install` 直接失败。
+# 旧设置 onlyBuiltDependencies 已在 pnpm 11 移除，由 allowBuilds 取代。
+allowBuilds:
+    # vite / vitest 的打包器平台二进制
+    esbuild: true
+    # 间接依赖的代码生成工具
+    protobufjs: true
+    # git hooks（见 package.json 的 prepare 脚本）
+    simple-git-hooks: true

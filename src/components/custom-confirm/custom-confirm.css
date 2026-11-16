@@ -1,0 +1,54 @@
+.custom-confirm-modal .ant-modal-content {
+	border-radius: 2px;
+}
+
+.custom-confirm-modal .ant-modal-header {
+	padding: 16px 24px;
+}
+
+.custom-confirm-modal .ant-modal-body {
+	padding: 16px 24px;
+}
+
+.custom-confirm-modal .ant-modal-footer {
+	padding: 12px 24px;
+}
+
+.custom-confirm-modal .ant-btn {
+	border-radius: 6px;
+}
+
+.custom-confirm-modal .ant-btn-primary {
+	background: var(--ant-primary-color, #1890ff);
+	border-color: var(--ant-primary-color, #1890ff);
+}
+
+/* 左对齐文字，调整确认按钮顺序等可以在这里补充 */
+.custom-confirm-modal .ant-modal-close {
+	right: 16px;
+	top: 12px;
+}
+
+.custom-confirm-modal .ant-modal-confirm-content {
+	/* min-height: 80px; */
+	color: rgba(144, 147, 153, 1);
+	font-size: 14px;
+}
+
+.custom-confirm-svg {
+	width: 21px;
+	height: 21px;
+	display: inline-block;
+	vertical-align: middle;
+	transform: translateX(-10px) translateY(2px);
+}
+
+.custom-confirm-modal .ant-modal-confirm .ant-modal-confirm-body {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.custom-confirm-modal .ant-modal-confirm-content {
+	min-height: 40px;
+}

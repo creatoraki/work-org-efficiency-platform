@@ -1,0 +1,156 @@
+[
+	{
+		"warningId": "YJ10098109",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.杭州物联网产业园服务中心",
+		"warningContent": "人均营收低于目标值",
+		"level": "黄色预警",
+		"levelCode": 2,
+		"firstWarningDate": "2024-11-09",
+		"status": "一级待阅",
+		"statusDetail": {
+			"level1": "待阅",
+			"level2": "未读",
+			"level3": "未读"
+		}
+	},
+	{
+		"warningId": "YJ10098134",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.高新区火炬创新服务中心",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"level": "橙色预警",
+		"levelCode": 3,
+		"firstWarningDate": "2024-11-08",
+		"status": "一级已阅，二级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "未读"
+		}
+	},
+	{
+		"warningId": "YJ10098167",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.银丰大厦服务中心",
+		"warningContent": "人均营收低于目标值",
+		"level": "红色预警",
+		"levelCode": 4,
+		"firstWarningDate": "2024-11-08",
+		"status": "一级已阅，二级待阅，三级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "待阅"
+		}
+	},
+	{
+		"warningId": "YJ10098169",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.银丰大厦服务中心",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"level": "黄色预警",
+		"levelCode": 2,
+		"firstWarningDate": "2024-11-09",
+		"status": "一级待阅",
+		"statusDetail": {
+			"level1": "待阅",
+			"level2": "未读",
+			"level3": "未读"
+		}
+	},
+	{
+		"warningId": "YJ10098120",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.杭州物联网产业园服务中心",
+		"warningContent": "人均营收低于目标值",
+		"level": "橙色预警",
+		"levelCode": 3,
+		"firstWarningDate": "2024-11-08",
+		"status": "一级已阅，二级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "未读"
+		}
+	},
+	{
+		"warningId": "YJ10098187",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.高新区火炬创新服务中心",
+		"warningContent": "人均营收低于目标值",
+		"level": "红色预警",
+		"levelCode": 4,
+		"firstWarningDate": "2024-11-08",
+		"status": "一级已阅，二级待阅，三级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "待阅"
+		}
+	},
+	{
+		"warningId": "YJ10098189",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.银丰大厦服务中心",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"level": "黄色预警",
+		"levelCode": 2,
+		"firstWarningDate": "2024-11-08",
+		"status": "一级待阅",
+		"statusDetail": {
+			"level1": "待阅",
+			"level2": "未读",
+			"level3": "未读"
+		}
+	},
+	{
+		"warningId": "YJ10098109",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.银丰大厦服务中心",
+		"warningContent": "人均营收低于目标值",
+		"level": "橙色预警",
+		"levelCode": 3,
+		"firstWarningDate": "2024-11-07",
+		"status": "一级已阅，二级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "未读"
+		}
+	},
+	{
+		"warningId": "YJ10098134",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.杭州物联网产业园服务中心",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"level": "红色预警",
+		"levelCode": 4,
+		"firstWarningDate": "2024-11-07",
+		"status": "一级已阅，二级待阅，三级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "待阅"
+		}
+	},
+	{
+		"warningId": "YJ10098167",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.高新区火炬创新服务中心",
+		"warningContent": "人均营收低于目标值",
+		"level": "橙色预警",
+		"levelCode": 3,
+		"firstWarningDate": "2024-11-05",
+		"status": "一级已阅，二级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "未读"
+		}
+	},
+	{
+		"warningId": "YJ10098169",
+		"orgPath": "杭州区域公司>杭东地区>滨江项目群>浙江.杭州.银丰大厦服务中心",
+		"warningContent": "当月实际在职人数当月管控人数",
+		"level": "红色预警",
+		"levelCode": 4,
+		"firstWarningDate": "2024-11-01",
+		"status": "一级已阅，二级待阅，三级待阅",
+		"statusDetail": {
+			"level1": "已阅",
+			"level2": "待阅",
+			"level3": "待阅"
+		}
+	}
+]

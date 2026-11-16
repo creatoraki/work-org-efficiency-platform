@@ -1,0 +1,42 @@
+/* 连接线：通过 CSS 变量控制位置，与圆点保持间距 */
+.deployment-steps-nav .deployment-step-icon-row::after,
+.deployment-steps-nav .deployment-step-icon-row::before {
+	content: "";
+	position: absolute;
+	top: var(--step-line-y, 12px);
+	height: 1px;
+	transform: translateY(-50%);
+	background: #e5e7eb;
+	pointer-events: none;
+}
+
+.deployment-steps-nav .deployment-step-icon-row::after,
+.deployment-steps-nav .deployment-step-icon-row::before {
+	transition: background 0.2s ease;
+}
+
+.deployment-steps-nav .deployment-step-icon-row[data-tail-done="true"]::after {
+	background: rgb(var(--oo-colorPrimary));
+}
+
+.deployment-steps-nav .deployment-step-icon-row::after {
+	left: calc(50% + var(--step-line-start, 20px));
+	width: calc(50% - var(--step-line-start, 20px));
+}
+
+.deployment-steps-nav .deployment-step-icon-row.deployment-step-last::after {
+	display: none;
+}
+
+.deployment-steps-nav .deployment-step-icon-row::before {
+	left: 0;
+	width: calc(50% - var(--step-line-start, 20px));
+}
+
+.deployment-steps-nav .deployment-step-icon-row[data-head-done="true"]::before {
+	background: rgb(var(--oo-colorPrimary));
+}
+
+.deployment-steps-nav .deployment-step-icon-row.deployment-step-first::before {
+	display: none;
+}
