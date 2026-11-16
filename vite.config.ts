@@ -147,7 +147,7 @@ export default defineConfig(({ mode }) => {
 					}
 				: {
 						"/shanshu-efficiency-api": {
-							target: "http://10.0.20.98:10013",
+							target: "http://10.0.20.189:10013",
 							changeOrigin: true,
 							ws: true,
 							agent: new http.Agent({ keepAlive: false }),
