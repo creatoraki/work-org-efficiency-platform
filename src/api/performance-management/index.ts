@@ -8,3 +8,4 @@ export * from "./plan";
 export * from "./self-eval";
 export * from "./submit";
 export * from "./todo";
+export * from "./yearly-performance";

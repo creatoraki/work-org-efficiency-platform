@@ -1,0 +1,45 @@
+/**
+ * 年终述职页面样式覆盖
+ *
+ * antd 内部节点（Select / Cascader / RangePicker / Pagination）没有可用的 styles 语义键，
+ * 只能用后代选择器覆盖；统一叠加组件类名提高特异性，避免 !important。
+ */
+
+/* 内嵌标签筛选框：控件自身左内边距清零，标签与内容的 12px 间距由外层 gap 唯一控制 */
+.labeledField :global(.ant-input-affix-wrapper),
+.labeledField :global(.ant-input-outlined.ant-input),
+.labeledField :global(.ant-select.ant-select-borderless) :global(.ant-select-selector),
+.labeledField :global(.ant-picker.ant-picker-borderless) {
+	padding-left: 0;
+}
+
+.labeledField :global(.ant-picker-range.ant-picker-borderless) :global(.ant-picker-active-bar) {
+	display: none;
+}
+
+.labeledField :global(.ant-picker-range) :global(.ant-picker-range-separator) {
+	color: #c0c4cc;
+}
+
+/* 分页：每页条数下拉为浅灰底无描边（设计稿 01）；重复类名提升特异性，覆盖 antd CSS-in-JS */
+.pagination.pagination :global(.ant-pagination-options .ant-select-outlined .ant-select-selector) {
+	border-color: transparent;
+	background: #f5f7fa;
+}
+
+.pagination :global(.ant-pagination-total-text) {
+	color: #909399;
+}
+
+.pagination.pagination :global(.ant-pagination-options .ant-select-arrow) {
+	color: #606266;
+}
+
+/* 述职时间：宽屏时「至」居中，两侧留白与设计稿一致；紧凑模式收窄 */
+.rangeWide:global(.ant-picker-range) :global(.ant-picker-range-separator) {
+	padding: 0 36px;
+}
+
+.rangeCompact:global(.ant-picker-range) :global(.ant-picker-range-separator) {
+	padding: 0 12px;
+}
