@@ -20,7 +20,7 @@ interface ToolbarButtonProps {
 }
 
 /**
- * 工具栏按钮：默认 #323233；悬浮浅主色并出现文字提示；按下深主色（设计稿 11）
+ * 工具栏按钮：默认 #323233；悬浮浅主色并出现文字提示；按下深主色（设计稿 23）
  *
  * @param props - 组件属性
  * @param props.title - 文字提示
@@ -68,12 +68,10 @@ function ToolbarButton({
 interface DetailToolbarProps {
 	/** 是否全屏 */
 	fullscreen: boolean;
-	/** 是否可下载 */
-	downloadable: boolean;
 	/** 下载中 */
 	downloading?: boolean;
-	/** 下载 */
-	onDownload: () => void;
+	/** 下载；不传时不展示下载按钮（仅报告已生成时展示，设计稿 20 / 23） */
+	onDownload?: () => void;
 	/** 切换全屏 */
 	onToggleFullscreen: () => void;
 	/** 关闭 */
@@ -85,7 +83,6 @@ interface DetailToolbarProps {
  *
  * @param props - 组件属性
  * @param props.fullscreen - 是否全屏
- * @param props.downloadable - 是否可下载
  * @param props.downloading - 下载中
  * @param props.onDownload - 下载
  * @param props.onToggleFullscreen - 切换全屏
@@ -96,7 +93,6 @@ interface DetailToolbarProps {
  */
 export function DetailToolbar({
 	fullscreen,
-	downloadable,
 	downloading,
 	onDownload,
 	onToggleFullscreen,
@@ -104,12 +100,14 @@ export function DetailToolbar({
 }: DetailToolbarProps) {
 	return (
 		<div className="flex shrink-0 items-center gap-2.5">
-			<ToolbarButton
-				title="下载"
-				icon={Download}
-				disabled={!downloadable || downloading}
-				onClick={onDownload}
-			/>
+			{onDownload ? (
+				<ToolbarButton
+					title="下载"
+					icon={Download}
+					disabled={downloading}
+					onClick={onDownload}
+				/>
+			) : null}
 			<ToolbarButton
 				title={fullscreen ? "退出全屏" : "全屏"}
 				icon={fullscreen ? Minimize2 : Maximize2}

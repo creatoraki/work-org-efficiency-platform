@@ -1,42 +1,56 @@
-import type {
-	YearlyReportDocumentType,
-	YearlyReportItem,
-} from "#src/api/performance-management/yearly-performance";
+import type { AppraisalUser } from "#src/api/performance-management/yearly-performance";
+import type { DetailFooterState } from "./detail-footer";
 
 import {
-	downloadYearlyReportDocument,
-	YearlyReportStatus,
+	AppraisalRecordStatus,
+	AppraisalStatus,
 } from "#src/api/performance-management/yearly-performance";
 import { cn } from "#src/utils";
-import { useMutation } from "@tanstack/react-query";
 import { App, Empty, Spin, Typography } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PersonAvatar } from "../components/person-avatar";
 import { StatusTag } from "../components/status-tag";
 import { DetailStep, STATUS_CURRENT_STEP } from "../constants";
-import { useYearlyReportDetail } from "../hooks/use-yearly-report-queries";
-import { formatReportTimeRange } from "../utils";
+import { useAppraisalUserDetail, useDocumentDownload } from "../hooks/use-yearly-report-queries";
+import { formatDateWithWeekday } from "../utils";
+import { DetailFooter } from "./detail-footer";
 import { DetailSteps } from "./detail-steps";
 import { DetailToolbar } from "./detail-toolbar";
-import { PrepMaterialDocument } from "./prep-material-document";
+import { PdfDocument } from "./pdf-document";
+import { RecordingPanel } from "./recording-panel";
 import { ReportGenerating } from "./report-generating";
-import { ScaledCanvas } from "./scaled-canvas";
-import { ScoreReportDocument } from "./score-report-document";
-import { TranscriptWorkspace } from "./transcript-workspace";
+
+/** 述职流程操作（由页面统一处理文件夹校验、防重复录制弹窗与刷新） */
+export interface PresentationHandlers {
+	/** 开始述职 */
+	onStart: (user: AppraisalUser) => void;
+	/** 追加录音 */
+	onAppend: (user: AppraisalUser) => void;
+	/** 重新开启 */
+	onRedo: (user: AppraisalUser) => void;
+	/** 结束录音 / 提交 */
+	onEnd: (user: AppraisalUser) => void;
+	/** 开始 / 追加提交中 */
+	starting?: boolean;
+	/** 重新开启提交中 */
+	redoing?: boolean;
+	/** 结束提交中 */
+	ending?: boolean;
+}
 
 interface DetailPanelProps {
 	/** 当前查看的述职人员（列表数据，详情加载前先渲染头部） */
-	item: YearlyReportItem;
+	user: AppraisalUser;
 	/** 是否全屏 */
 	fullscreen: boolean;
 	/** 切换全屏 */
 	onFullscreenChange: (fullscreen: boolean) => void;
 	/** 关闭详情 */
 	onClose: () => void;
-	/** 结束录音 */
-	onFinishRecording: (item: YearlyReportItem) => void;
-	/** 结束录音提交中 */
-	finishing?: boolean;
+	/** 述职流程操作 */
+	handlers: PresentationHandlers;
+	/** 详情状态与列表不一致（后端已流转）时通知页面同步状态并刷新列表 */
+	onStatusDrift: (status: AppraisalStatus) => void;
 	/** 打开时默认查看的步骤（如卡片「查看进度 / 查看报告」） */
 	initialStep?: DetailStep;
 }
@@ -70,67 +84,100 @@ function InfoLine({ label, value }: InfoLineProps) {
 /**
  * 述职详情面板
  *
- * - 抽屉态：列表右侧并排展示（宽 625px，左侧 1px 描边），头部 + 三步流程 + 内容区（#F5F7FA 底、10px 内边距）；
+ * - 抽屉态：列表右侧并排展示（宽 625px，左侧 1px 描边），头部 + 三步流程 + 内容区（#F5F7FA 底、10px 内边距）+ 底栏；
  * - 全屏态：覆盖页面内容区，头部信息改为单行四列，流程条居中，内容区 24px 内边距；
- * - 内容区随步骤切换：备课材料 / 录音转写 / 报告生成中 / 评分报告，文档类内容适应宽度等比缩放。
+ * - 内容随步骤切换：备课材料 PDF / 闪记录制结果 / 报告生成中 / 评分报告 PDF（设计稿 16–20）；
+ * - 底栏随状态切换：开始述职 / 上一步 + 提交 / 下载报告，报告生成中无底栏。
  *
  * @param props - 组件属性
- * @param props.item - 当前查看的述职人员（列表数据，详情加载前先渲染头部）
+ * @param props.user - 当前查看的述职人员
  * @param props.fullscreen - 是否全屏
  * @param props.onFullscreenChange - 切换全屏
  * @param props.onClose - 关闭详情
- * @param props.onFinishRecording - 结束录音
- * @param props.finishing - 结束录音提交中
- * @param props.initialStep - 打开时默认查看的步骤（如卡片「查看进度 / 查看报告」）
+ * @param props.handlers - 述职流程操作
+ * @param props.onStatusDrift - 详情状态与列表不一致时通知页面刷新
+ * @param props.initialStep - 打开时默认查看的步骤
  * @returns 详情面板
  *
  * @since 2026-11-16
  */
 export function DetailPanel({
-	item,
+	user,
 	fullscreen,
 	onFullscreenChange,
 	onClose,
-	onFinishRecording,
-	finishing,
+	handlers,
+	onStatusDrift,
 	initialStep,
 }: DetailPanelProps) {
 	const { message } = App.useApp();
-	const { data: detail, isError } = useYearlyReportDetail(item.reportId);
-	const currentStep = STATUS_CURRENT_STEP[item.status];
-	const finished = item.status === YearlyReportStatus.READY;
+	const { data: queried, isError } = useAppraisalUserDetail(user.userId);
+	// 切换人员时旧详情仍在缓存中，按 userId 校验避免串数据
+	const detail = queried?.userId === user.userId ? queried : undefined;
+	const status = detail?.appraisalStatus ?? user.appraisalStatus;
+	const currentStep = STATUS_CURRENT_STEP[status];
+	const download = useDocumentDownload();
+
+	// 详情轮询发现状态已流转（如闪记回调、报告生成）时，通知页面刷新列表与统计
+	useEffect(() => {
+		if (detail && detail.appraisalStatus !== user.appraisalStatus) {
+			onStatusDrift(detail.appraisalStatus);
+		}
+	}, [detail, user.appraisalStatus, onStatusDrift]);
 
 	// 查看步骤与「人员 + 状态」绑定：切换人员或状态流转后回到当前步骤
-	const viewKey = `${item.reportId}-${item.status}`;
+	const viewKey = `${user.userId}-${status}`;
 	const [viewing, setViewing] = useState<{ key: string; step: DetailStep }>();
 	const viewingStep =
 		viewing?.key === viewKey
 			? viewing.step
 			: (Math.min(initialStep ?? currentStep, currentStep) as DetailStep);
+	const viewStep = (step: DetailStep) => setViewing({ key: viewKey, step });
 
-	// 各步骤均可下载：备课材料 / 录音转写；第 3 步报告未生成时下载已归档的录音转写
-	const documentType: YearlyReportDocumentType | undefined = !detail
-		? undefined
-		: viewingStep === DetailStep.PREPARE
-			? "prep"
-			: viewingStep === DetailStep.REPORT && detail.scoreReport
-				? "report"
-				: detail.transcript
-					? "transcript"
-					: undefined;
+	const reportUrl = detail?.evaluationReportUrl;
+	const downloadReport =
+		status === AppraisalStatus.READY && reportUrl
+			? () =>
+					download.mutate(
+						{ url: reportUrl, fileName: `${user.userName}-述职综合评分报告.pdf` },
+						{ onError: () => message.error("下载失败，请稍后重试") },
+					)
+			: undefined;
 
-	const download = useMutation({
-		mutationFn: () => downloadYearlyReportDocument(item.reportId, documentType ?? "prep"),
-		onSuccess: (fileName) => message.success(`已开始下载：${fileName}`),
-		onError: (error: Error) => message.error(error.message || "下载失败"),
-	});
+	const recorded = Boolean(
+		detail?.appraisalRecords.some(
+			(record) => record.status === AppraisalRecordStatus.COMPLETED,
+		),
+	);
 
-	// 详情与列表状态短暂不一致时（如刚开始述职），以详情数据是否齐全兜底
+	const footer: DetailFooterState | undefined = (() => {
+		if (viewingStep === DetailStep.PREPARE && status === AppraisalStatus.PENDING) {
+			return {
+				type: "start",
+				loading: handlers.starting,
+				onStart: () => handlers.onStart(user),
+			};
+		}
+		if (viewingStep === DetailStep.RECORDING && status === AppraisalStatus.IN_PROGRESS) {
+			return {
+				type: "submit",
+				recorded,
+				loading: handlers.ending,
+				onPrev: () => viewStep(DetailStep.PREPARE),
+				onSubmit: () => handlers.onEnd(user),
+			};
+		}
+		if (viewingStep === DetailStep.REPORT && downloadReport) {
+			return { type: "download", loading: download.isPending, onDownload: downloadReport };
+		}
+		return undefined;
+	})();
+
 	const renderBody = () => {
 		if (isError) {
 			return <Empty className="pt-24" description="详情加载失败，请稍后重试" />;
 		}
-		if (!detail || detail.reportId !== item.reportId) {
+		if (!detail) {
 			return (
 				<div className="flex h-full items-center justify-center">
 					<Spin />
@@ -139,53 +186,46 @@ export function DetailPanel({
 		}
 		if (viewingStep === DetailStep.PREPARE) {
 			return (
-				<div className="rounded-md bg-white shadow-[0_0_6px_0_rgba(0,0,0,0.06)]">
-					<ScaledCanvas>
-						<PrepMaterialDocument material={detail.prepMaterial} />
-					</ScaledCanvas>
-				</div>
+				<PdfDocument
+					url={detail.materialUrl}
+					title={`${user.userName}-述职备课材料`}
+					emptyText="备课材料尚未从千问办公同步"
+				/>
 			);
 		}
 		if (viewingStep === DetailStep.RECORDING) {
-			return detail.transcript ? (
-				<ScaledCanvas fillHeight>
-					<TranscriptWorkspace
-						key={item.reportId}
-						transcript={detail.transcript}
-						recordable={item.status === YearlyReportStatus.IN_PROGRESS}
-						finishing={finishing}
-						onFinish={() => onFinishRecording(item)}
-					/>
-				</ScaledCanvas>
-			) : (
-				<Empty className="pt-24" description="述职尚未开始，暂无录音转写" />
-			);
-		}
-		if (detail.scoreReport) {
 			return (
-				<div className="rounded-md bg-white shadow-[0_0_6px_0_rgba(0,0,0,0.06)]">
-					<ScaledCanvas>
-						<ScoreReportDocument
-							report={detail.scoreReport}
-							onViewTranscript={() =>
-								setViewing({ key: viewKey, step: DetailStep.RECORDING })
-							}
-						/>
-					</ScaledCanvas>
-				</div>
+				<RecordingPanel
+					records={detail.appraisalRecords}
+					editable={status === AppraisalStatus.IN_PROGRESS}
+					redoing={handlers.redoing}
+					appending={handlers.starting}
+					onRedo={() => handlers.onRedo(user)}
+					onAppend={() => handlers.onAppend(user)}
+				/>
 			);
 		}
-		return detail.generating ? <ReportGenerating generating={detail.generating} /> : null;
+		if (status === AppraisalStatus.READY) {
+			return (
+				<PdfDocument
+					url={reportUrl}
+					title={`${user.userName}-述职综合评分报告`}
+					emptyText="评分报告已生成，文件同步中"
+				/>
+			);
+		}
+		return <ReportGenerating archivedTime={detail.realEndTime} />;
 	};
 
 	const infoItems: InfoLineProps[] = [
-		{ label: "管理者类别", value: item.managerCategory },
-		{ label: "组织架构", value: item.orgPath },
+		{ label: "管理者类别", value: user.jobType || "-" },
+		{ label: "组织架构", value: user.orgName || "-" },
 		{
 			label: "述职日期",
-			value: formatReportTimeRange(item.reportStartTime, item.reportEndTime),
+			value: formatDateWithWeekday(detail?.appraisalDate ?? user.appraisalDate),
 		},
-		{ label: "工号", value: item.userCode },
+		// 契约无工号字段，暂以所属文件夹（述职会）补位，见对接文档
+		{ label: "所属文件夹", value: (detail?.folderName ?? user.folderName) || "未归入文件夹" },
 	];
 
 	return (
@@ -202,17 +242,16 @@ export function DetailPanel({
 				)}
 			>
 				<div className="flex h-8 items-center gap-2">
-					<PersonAvatar name={item.userName} src={item.avatar} size={32} fontSize={16} />
+					<PersonAvatar name={user.userName} size={32} fontSize={16} />
 					<span className="min-w-0 truncate text-xl font-medium leading-8 text-[#323233]">
-						{item.userName}
+						{user.userName}
 					</span>
-					<StatusTag status={item.status} />
+					<StatusTag status={status} />
 					<span className="flex-1" />
 					<DetailToolbar
 						fullscreen={fullscreen}
-						downloadable={Boolean(documentType)}
 						downloading={download.isPending}
-						onDownload={() => download.mutate()}
+						onDownload={downloadReport}
 						onToggleFullscreen={() => onFullscreenChange(!fullscreen)}
 						onClose={onClose}
 					/>
@@ -230,9 +269,9 @@ export function DetailPanel({
 				<div className="mt-3">
 					<DetailSteps
 						currentStep={currentStep}
-						finished={finished}
+						finished={status === AppraisalStatus.READY}
 						viewingStep={viewingStep}
-						onViewStepChange={(step) => setViewing({ key: viewKey, step })}
+						onViewStepChange={viewStep}
 					/>
 				</div>
 			</header>
@@ -240,12 +279,11 @@ export function DetailPanel({
 				className={cn(
 					"relative min-h-0 flex-1 overflow-y-auto bg-[#F5F7FA]",
 					fullscreen ? "p-6" : "p-2.5",
-					// 录音转写工作区自身撑满高度，不需要外层滚动
-					viewingStep === DetailStep.RECORDING && "overflow-hidden",
 				)}
 			>
 				{renderBody()}
 			</div>
+			{footer ? <DetailFooter state={footer} /> : null}
 		</div>
 	);
 }

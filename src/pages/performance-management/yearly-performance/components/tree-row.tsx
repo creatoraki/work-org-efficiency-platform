@@ -24,6 +24,8 @@ interface TreeRowProps {
 	hoverActions?: ReactNode;
 	/** 是否为拖拽放置目标高亮 */
 	dropActive?: boolean;
+	/** 是否禁用（无数据权限的组织节点：可展开，不可选中） */
+	disabled?: boolean;
 	/** 额外样式 */
 	className?: string;
 }
@@ -32,7 +34,7 @@ interface TreeRowProps {
  * 树行
  *
  * 32px 行高；左内边距 8px + 层级缩进，16px 三角区 + 4px 间距后为标题；人数 #606266 右对齐（右内边距 4px）。
- * 悬浮时标题与操作区出现 #F5F7FA 底（三角区除外），有 hoverActions 时人数替换为操作图标（设计稿 19）。
+ * 悬浮时标题与操作区出现 #F5F7FA 底（三角区除外），有 hoverActions 时人数替换为操作图标（设计稿 24）。
  *
  * @param props - 组件属性
  * @param props.level - 层级，从 0 开始，每级缩进 16px
@@ -45,6 +47,7 @@ interface TreeRowProps {
  * @param props.onClick - 点击行
  * @param props.hoverActions - 悬浮时替换人数展示的操作区（如文件夹的编辑 / 删除）
  * @param props.dropActive - 是否为拖拽放置目标高亮
+ * @param props.disabled - 是否禁用
  * @param props.className - 额外样式
  * @returns 树行
  *
@@ -61,6 +64,7 @@ export function TreeRow({
 	onClick,
 	hoverActions,
 	dropActive,
+	disabled,
 	className,
 }: TreeRowProps) {
 	return (
@@ -86,22 +90,28 @@ export function TreeRow({
 			</span>
 			<div
 				role="button"
-				tabIndex={0}
-				onClick={onClick}
+				tabIndex={disabled ? -1 : 0}
+				aria-disabled={disabled || undefined}
+				onClick={disabled ? undefined : onClick}
 				onKeyDown={(event) => {
-					if (event.key === "Enter") {
+					if (!disabled && event.key === "Enter") {
 						onClick?.();
 					}
 				}}
 				className={cn(
-					"ml-0.5 flex h-7 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded pl-0.5 pr-1 outline-none transition-colors hover:bg-[#F5F7FA]",
+					"ml-0.5 flex h-7 min-w-0 flex-1 items-center gap-2 rounded pl-0.5 pr-1 outline-none transition-colors",
+					disabled ? "cursor-default" : "cursor-pointer hover:bg-[#F5F7FA]",
 					dropActive && "bg-[#E0EEFF] outline-dashed outline-1 outline-[#0075FF]",
 				)}
 			>
 				<span
 					className={cn(
 						"min-w-0 flex-1 truncate",
-						selected ? "text-[#0075FF]" : "text-[#323233]",
+						disabled
+							? "text-[#909399]"
+							: selected
+								? "text-[#0075FF]"
+								: "text-[#323233]",
 					)}
 					title={title}
 				>

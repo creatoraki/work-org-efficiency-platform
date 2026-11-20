@@ -1,22 +1,13 @@
 import type {
-	YearlyReportCascaderOption,
-	YearlyReportStatistics,
+	AppraisalStatistics,
+	AppraisalStatus,
 } from "#src/api/performance-management/yearly-performance";
 import type { ReportFilterValues } from "../types";
 
-import { YearlyReportStatus } from "#src/api/performance-management/yearly-performance";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { YEARLY_REPORT_STATUS_ORDER } from "../constants";
+import { APPRAISAL_STATUS_ORDER } from "../constants";
 import { FilterBar } from "./filter-bar";
 import { StatCard } from "./stat-card";
-
-/** 状态 → 统计字段 */
-const STATISTICS_FIELD: Record<YearlyReportStatus, keyof YearlyReportStatistics> = {
-	[YearlyReportStatus.PENDING]: "pendingCount",
-	[YearlyReportStatus.IN_PROGRESS]: "inProgressCount",
-	[YearlyReportStatus.GENERATING]: "generatingCount",
-	[YearlyReportStatus.READY]: "readyCount",
-};
 
 interface OverviewSectionProps {
 	/** 是否收起 */
@@ -24,17 +15,15 @@ interface OverviewSectionProps {
 	/** 收起 / 展开 */
 	onCollapsedChange: (collapsed: boolean) => void;
 	/** 概览统计 */
-	statistics?: YearlyReportStatistics;
+	statistics?: AppraisalStatistics;
 	/** 当前已生效的状态筛选（卡片选中态以已生效条件为准） */
-	activeStatus?: YearlyReportStatus;
+	activeStatus?: AppraisalStatus;
 	/** 点击数据卡片 */
-	onStatusCardClick: (status: YearlyReportStatus) => void;
+	onStatusCardClick: (status: AppraisalStatus) => void;
 	/** 筛选表单值 */
 	filterValue: ReportFilterValues;
 	/** 筛选表单值变更 */
 	onFilterChange: (value: ReportFilterValues) => void;
-	/** 管理者类别选项 */
-	managerCategoryOptions: YearlyReportCascaderOption[];
 	/** 查询 */
 	onSearch: () => void;
 	/** 重置 */
@@ -47,17 +36,17 @@ interface OverviewSectionProps {
  * 概览与筛选
  *
  * 标题行（4×16 主色竖条 + 16px 标题 + 14px 说明 + 右侧收起 / 展开）；
- * 展开时依次为数据卡片、筛选区、分隔线，纵向间距 16px；收起时仅保留标题行与分隔线。数据卡片与筛选区「述职状态」联动。
+ * 展开时依次为筛选区、数据卡片、分隔线，纵向间距 16px（11-20 设计稿筛选区上移至卡片之前）；
+ * 收起时仅保留标题行与分隔线。数据卡片与筛选区「述职状态」联动。
  *
  * @param props - 组件属性
  * @param props.collapsed - 是否收起
  * @param props.onCollapsedChange - 收起 / 展开
  * @param props.statistics - 概览统计
- * @param props.activeStatus - 当前已生效的状态筛选（卡片选中态以已生效条件为准）
+ * @param props.activeStatus - 当前已生效的状态筛选
  * @param props.onStatusCardClick - 点击数据卡片
  * @param props.filterValue - 筛选表单值
  * @param props.onFilterChange - 筛选表单值变更
- * @param props.managerCategoryOptions - 管理者类别选项
  * @param props.onSearch - 查询
  * @param props.onReset - 重置
  * @param props.compact - 紧凑模式
@@ -73,7 +62,6 @@ export function OverviewSection({
 	onStatusCardClick,
 	filterValue,
 	onFilterChange,
-	managerCategoryOptions,
 	onSearch,
 	onReset,
 	compact,
@@ -104,31 +92,30 @@ export function OverviewSection({
 
 			{collapsed ? null : (
 				<>
-					<div className="mt-4 grid grid-cols-4 gap-6">
-						{YEARLY_REPORT_STATUS_ORDER.map((status) => (
-							<StatCard
-								key={status}
-								status={status}
-								count={statistics?.[STATISTICS_FIELD[status]] ?? 0}
-								active={activeStatus === status}
-								compact={compact}
-								onClick={onStatusCardClick}
-							/>
-						))}
-					</div>
 					<div className="mt-4">
 						<FilterBar
 							value={filterValue}
-							managerCategoryOptions={managerCategoryOptions}
 							compact={compact}
 							onChange={onFilterChange}
 							onSearch={onSearch}
 							onReset={onReset}
 						/>
 					</div>
+					<div className="mt-4 grid grid-cols-4 gap-6">
+						{APPRAISAL_STATUS_ORDER.map((status) => (
+							<StatCard
+								key={status}
+								status={status}
+								count={statistics?.[status] ?? 0}
+								active={activeStatus === status}
+								compact={compact}
+								onClick={onStatusCardClick}
+							/>
+						))}
+					</div>
 				</>
 			)}
-			{/* 收起时分隔线保留（设计稿 06） */}
+			{/* 收起时分隔线保留（设计稿 07） */}
 			<div className="mt-4 h-px bg-[#EBEEF5]" />
 		</section>
 	);

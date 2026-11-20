@@ -1,14 +1,15 @@
-import type { YearlyReportItem } from "#src/api/performance-management/yearly-performance";
+import type { AppraisalUser } from "#src/api/performance-management/yearly-performance";
 import type { CSSProperties, MouseEvent, ReactNode } from "react";
 
-import { YearlyReportStatus } from "#src/api/performance-management/yearly-performance";
+import { AppraisalStatus } from "#src/api/performance-management/yearly-performance";
 import { cn } from "#src/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button, Checkbox, Typography } from "antd";
-import { formatReportTimeRange } from "../utils";
+import { formatDateWithWeekday } from "../utils";
 import { MicIcon, NoteIcon, PowerIcon } from "./icons";
 import { PersonAvatar } from "./person-avatar";
+import { SortNoBox } from "./sort-no-box";
 import { StatusTag } from "./status-tag";
 
 /** 卡片操作 */
@@ -16,17 +17,21 @@ export type PersonCardAction = "start" | "finish" | "progress" | "report";
 
 interface PersonCardProps {
 	/** 述职人员 */
-	item: YearlyReportItem;
+	user: AppraisalUser;
 	/** 是否勾选 */
 	checked: boolean;
 	/** 是否为当前查看详情的卡片 */
 	active: boolean;
+	/** 是否允许在卡片之间排序（仅具体文件夹视图） */
+	sortable: boolean;
 	/** 勾选变更 */
-	onCheckedChange: (reportId: string, checked: boolean) => void;
+	onCheckedChange: (userId: string, checked: boolean) => void;
 	/** 点击卡片 / 姓名，展开详情 */
-	onOpen: (item: YearlyReportItem) => void;
+	onOpen: (user: AppraisalUser) => void;
 	/** 底部操作按钮 */
-	onAction: (item: YearlyReportItem, action: PersonCardAction) => void;
+	onAction: (user: AppraisalUser, action: PersonCardAction) => void;
+	/** 修改述职顺序（序号输入） */
+	onSortChange: (user: AppraisalUser, position: number) => void;
 	/** 操作按钮 loading */
 	actionLoading?: boolean;
 }
@@ -43,7 +48,7 @@ interface InfoRowProps {
 }
 
 /**
- * 卡片信息行：字段名固定 6 个汉字宽并右对齐，使「管理者类别：」「组织架构：」「述职时间：」冒号对齐
+ * 卡片信息行：字段名固定 6 个汉字宽并右对齐，使「管理者类别：」「组织架构：」「述职日期：」冒号对齐
  *
  * @param props - 组件属性
  * @param props.label - 字段名
@@ -74,7 +79,7 @@ function InfoRow({ label, value, ellipsis, className }: InfoRowProps) {
 const ACTION_BUTTON_CLASS = "!h-8 !gap-1 !px-[11px] !text-sm [&_svg]:size-3.5";
 
 /**
- * 卡片底部操作按钮
+ * 卡片底部操作按钮（设计稿 22）
  *
  * 待述职 → 开始述职；述职中 → 结束录音；报告生成中 → 查看进度；报告已生成 → 查看报告。
  *
@@ -89,7 +94,7 @@ function ActionButton({
 	loading,
 	onClick,
 }: {
-	status: YearlyReportStatus;
+	status: AppraisalStatus;
 	loading?: boolean;
 	onClick: (action: PersonCardAction) => void;
 }) {
@@ -99,7 +104,7 @@ function ActionButton({
 		onClick(action);
 	};
 	switch (status) {
-		case YearlyReportStatus.PENDING:
+		case AppraisalStatus.PENDING:
 			return (
 				<Button
 					type="primary"
@@ -111,7 +116,7 @@ function ActionButton({
 					开始述职
 				</Button>
 			);
-		case YearlyReportStatus.IN_PROGRESS:
+		case AppraisalStatus.IN_PROGRESS:
 			return (
 				<Button
 					danger
@@ -123,7 +128,7 @@ function ActionButton({
 					结束录音
 				</Button>
 			);
-		case YearlyReportStatus.GENERATING:
+		case AppraisalStatus.GENERATING:
 			return (
 				<Button
 					className={cn(ACTION_BUTTON_CLASS, "!text-[#323233]")}
@@ -147,38 +152,44 @@ function ActionButton({
 }
 
 /**
- * 述职人员卡片
+ * 述职人员卡片（设计稿 30 / 31 母组件）
  *
- * 结构（自上而下，内边距 12px）：勾选框 · 序号 · 头像 · 姓名 · 状态标签 / 管理者类别 / 组织架构 / 分隔线 / 述职时间 · 操作按钮。
+ * 结构（自上而下，内边距 12px）：勾选框 · 序号框 · 头像 · 姓名 · 状态标签 / 管理者类别 / 组织架构 / 分隔线 / 述职日期 · 操作按钮。
  * 交互：
- * - 姓名或整张卡片点击展开详情（勾选框区域除外）；
+ * - 姓名或整张卡片点击展开详情（勾选框、序号框区域除外）；
  * - 默认 #DCDFE6 描边，悬浮 #5CA7FF，按下 #0062D6，当前查看 #0075FF；
- * - 整张卡片可拖拽：卡片之间排序，或拖到左侧文件夹归档（拖拽由 dnd-kit 接管，5px 位移阈值避免误触点击）。
+ * - 整张卡片可拖拽：拖到左侧文件夹归档；在具体文件夹内还可在卡片之间排序，或点击序号直接输入新顺序。
  *
  * @param props - 组件属性
- * @param props.item - 述职人员
+ * @param props.user - 述职人员
  * @param props.checked - 是否勾选
  * @param props.active - 是否为当前查看详情的卡片
+ * @param props.sortable - 是否允许排序
  * @param props.onCheckedChange - 勾选变更
  * @param props.onOpen - 点击卡片 / 姓名，展开详情
  * @param props.onAction - 底部操作按钮
+ * @param props.onSortChange - 修改述职顺序
  * @param props.actionLoading - 操作按钮 loading
  * @returns 人员卡片
  *
  * @since 2026-11-16
  */
 export function PersonCard({
-	item,
+	user,
 	checked,
 	active,
+	sortable,
 	onCheckedChange,
 	onOpen,
 	onAction,
+	onSortChange,
 	actionLoading,
 }: PersonCardProps) {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-		id: item.reportId,
-		data: { type: "person", item },
+		id: user.userId,
+		data: { type: "person", user },
+		// 非文件夹视图只允许拖入文件夹，不参与卡片间排序（避免拖拽时其他卡片让位造成误解）
+		disabled: { draggable: false, droppable: !sortable },
 	});
 
 	const style: CSSProperties = {
@@ -194,10 +205,10 @@ export function PersonCard({
 			{...listeners}
 			role="button"
 			tabIndex={0}
-			onClick={() => onOpen(item)}
+			onClick={() => onOpen(user)}
 			onKeyDown={(event) => {
 				if (event.key === "Enter") {
-					onOpen(item);
+					onOpen(user);
 				}
 			}}
 			className={cn(
@@ -219,40 +230,45 @@ export function PersonCard({
 				>
 					<Checkbox
 						checked={checked}
-						onChange={(event) => onCheckedChange(item.reportId, event.target.checked)}
+						onChange={(event) => onCheckedChange(user.userId, event.target.checked)}
 					/>
 				</span>
-				<span className="ml-2 shrink-0 text-xl leading-[26px] text-[#323233]">
-					{item.sortNo}
+				<span className="ml-2 flex shrink-0">
+					<SortNoBox
+						value={user.sort}
+						editable={sortable}
+						disabledTip="选择文件夹后可调整述职顺序"
+						onCommit={(position) => onSortChange(user, position)}
+					/>
 				</span>
-				<PersonAvatar className="ml-2" name={item.userName} src={item.avatar} />
+				<PersonAvatar className="ml-2" name={user.userName} />
 				<span className="ml-2 min-w-0 flex-1 truncate text-xl leading-[26px] text-[#0075FF]">
-					{item.userName}
+					{user.userName}
 				</span>
-				<StatusTag className="ml-2" status={item.status} />
+				<StatusTag className="ml-2" status={user.appraisalStatus} />
 			</div>
 
 			<InfoRow
 				className="mt-[13px]"
 				label="管理者类别"
-				value={item.managerCategory}
+				value={user.jobType || "-"}
 				ellipsis
 			/>
-			<InfoRow className="mt-1" label="组织架构" value={item.orgPath} ellipsis />
+			<InfoRow className="mt-1" label="组织架构" value={user.orgName || "-"} ellipsis />
 
 			<div className="mt-3 h-px bg-[#EBEEF5]" />
 
 			<div className="mt-3 flex h-8 items-center justify-between gap-2">
 				<InfoRow
 					className="min-w-0 flex-1"
-					label="述职时间"
-					value={formatReportTimeRange(item.reportStartTime, item.reportEndTime)}
+					label="述职日期"
+					value={formatDateWithWeekday(user.appraisalDate)}
 				/>
 				<span className="shrink-0" onPointerDown={(event) => event.stopPropagation()}>
 					<ActionButton
-						status={item.status}
+						status={user.appraisalStatus}
 						loading={actionLoading}
-						onClick={(action) => onAction(item, action)}
+						onClick={(action) => onAction(user, action)}
 					/>
 				</span>
 			</div>

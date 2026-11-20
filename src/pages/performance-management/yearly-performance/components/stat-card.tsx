@@ -1,21 +1,21 @@
 import type { ComponentType, SVGProps } from "react";
 
-import { YearlyReportStatus } from "#src/api/performance-management/yearly-performance";
+import { AppraisalStatus } from "#src/api/performance-management/yearly-performance";
 import { cn } from "#src/utils";
-import { YEARLY_REPORT_STATUS_META } from "../constants";
+import { APPRAISAL_STATUS_META } from "../constants";
 import { FileClockIcon, FileDoneIcon, MicIcon, UserVoiceIcon } from "./icons";
 
 /** 状态 → 概览卡片图标 */
-const STATUS_ICON: Record<YearlyReportStatus, ComponentType<SVGProps<SVGSVGElement>>> = {
-	[YearlyReportStatus.PENDING]: UserVoiceIcon,
-	[YearlyReportStatus.IN_PROGRESS]: MicIcon,
-	[YearlyReportStatus.GENERATING]: FileClockIcon,
-	[YearlyReportStatus.READY]: FileDoneIcon,
+const STATUS_ICON: Record<AppraisalStatus, ComponentType<SVGProps<SVGSVGElement>>> = {
+	[AppraisalStatus.PENDING]: UserVoiceIcon,
+	[AppraisalStatus.IN_PROGRESS]: MicIcon,
+	[AppraisalStatus.GENERATING]: FileClockIcon,
+	[AppraisalStatus.READY]: FileDoneIcon,
 };
 
 interface StatCardProps {
 	/** 述职状态 */
-	status: YearlyReportStatus;
+	status: AppraisalStatus;
 	/** 人数 */
 	count: number;
 	/** 是否为当前筛选状态 */
@@ -23,7 +23,7 @@ interface StatCardProps {
 	/** 紧凑模式：主区域较窄时内边距 12px（设计稿 18） */
 	compact?: boolean;
 	/** 点击：切换状态筛选 */
-	onClick: (status: YearlyReportStatus) => void;
+	onClick: (status: AppraisalStatus) => void;
 }
 
 /**
@@ -43,7 +43,7 @@ interface StatCardProps {
  * @since 2026-11-16
  */
 export function StatCard({ status, count, active, compact, onClick }: StatCardProps) {
-	const meta = YEARLY_REPORT_STATUS_META[status];
+	const meta = APPRAISAL_STATUS_META[status];
 	const Icon = STATUS_ICON[status];
 	return (
 		<button

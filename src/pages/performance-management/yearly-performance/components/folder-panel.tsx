@@ -1,25 +1,25 @@
-import type { YearlyReportFolder } from "#src/api/performance-management/yearly-performance";
+import type { AppraisalFolder } from "#src/api/performance-management/yearly-performance";
 
-import {
-	YEARLY_REPORT_FOLDER_ALL,
-	YEARLY_REPORT_FOLDER_UNFILED,
-} from "#src/api/performance-management/yearly-performance";
 import { useDroppable } from "@dnd-kit/core";
-import { Input, Tooltip } from "antd";
+import { Input, Spin, Tooltip } from "antd";
 import { Pencil, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { FOLDER_ALL } from "../constants";
 import { TreeRow } from "./tree-row";
 
 /** 文件夹放置目标 ID 前缀（与人员卡片的排序 ID 区分） */
 export const FOLDER_DROP_PREFIX = "folder:";
 
+/** 文件夹行 DOM 标记，新增成功后「定位至该文件夹」按此滚动 */
+export const FOLDER_ROW_ATTR = "data-folder-id";
+
 interface FolderPanelProps {
-	/** 「全部」人数 */
-	totalCount: number;
-	/** 「未归入文件夹」人数 */
-	unfiledCount: number;
+	/** 「全部」人数，未知时不展示 */
+	totalCount?: number;
 	/** 文件夹 */
-	folders: YearlyReportFolder[];
+	folders: AppraisalFolder[];
+	/** 加载中 */
+	loading?: boolean;
 	/** 选中文件夹 */
 	selectedFolderId: string;
 	/** 文件夹关键字 */
@@ -31,22 +31,22 @@ interface FolderPanelProps {
 	/** 新增 */
 	onCreate: () => void;
 	/** 重命名 */
-	onRename: (folder: YearlyReportFolder) => void;
+	onRename: (folder: AppraisalFolder) => void;
 	/** 删除 */
-	onDelete: (folder: YearlyReportFolder) => void;
+	onDelete: (folder: AppraisalFolder) => void;
 }
 
 interface FolderRowProps {
 	/** 文件夹 */
-	folder: YearlyReportFolder;
+	folder: AppraisalFolder;
 	/** 是否选中 */
 	selected: boolean;
 	/** 选中 */
 	onSelect: (folderId: string) => void;
 	/** 重命名 */
-	onRename: (folder: YearlyReportFolder) => void;
+	onRename: (folder: AppraisalFolder) => void;
 	/** 删除 */
-	onDelete: (folder: YearlyReportFolder) => void;
+	onDelete: (folder: AppraisalFolder) => void;
 }
 
 /** 悬浮操作图标样式：16px #909399，悬浮主色 */
@@ -54,7 +54,7 @@ const ACTION_ICON_CLASS =
 	"size-4 cursor-pointer text-[#909399] outline-none transition-colors hover:text-[#0075FF]";
 
 /**
- * 文件夹行：可作为人员卡片的拖拽放置目标；悬浮时人数替换为「编辑 / 删除」图标（带文字提示）
+ * 文件夹行：可作为人员卡片的拖拽放置目标；悬浮时出现「编辑 / 删除」图标（带文字提示，设计稿 24）
  *
  * @param props - 组件属性
  * @param props.folder - 文件夹
@@ -66,19 +66,18 @@ const ACTION_ICON_CLASS =
  */
 function FolderRow({ folder, selected, onSelect, onRename, onDelete }: FolderRowProps) {
 	const { setNodeRef, isOver } = useDroppable({
-		id: `${FOLDER_DROP_PREFIX}${folder.folderId}`,
-		data: { type: "folder", folderId: folder.folderId },
+		id: `${FOLDER_DROP_PREFIX}${folder.id}`,
+		data: { type: "folder", folderId: folder.id },
 	});
 	return (
-		<div ref={setNodeRef}>
+		<div ref={setNodeRef} {...{ [FOLDER_ROW_ATTR]: folder.id }}>
 			<TreeRow
 				level={1}
-				title={folder.folderName}
-				count={folder.headCount}
+				title={folder.name}
 				selected={selected}
 				showSwitcher
 				dropActive={isOver}
-				onClick={() => onSelect(folder.folderId)}
+				onClick={() => onSelect(folder.id)}
 				hoverActions={
 					<>
 						<Tooltip title="编辑">
@@ -111,13 +110,17 @@ function FolderRow({ folder, selected, onSelect, onRename, onDelete }: FolderRow
 /**
  * 文件夹面板
  *
- * 「全部」为根，固定子项「未归入文件夹」，其后为当前组织范围内的文件夹（文件夹即一场述职会）。
- * 文件夹名称右侧展示人数；拖拽人员卡片到文件夹上即归入该文件夹。
+ * 「全部」为根，其下为当前组织范围内的文件夹（文件夹即一场述职会）；拖拽人员卡片到文件夹上即归入该文件夹。
+ *
+ * 与设计稿差异（契约限制，见 docs/swagger/yearly-performance-api.md）：
+ * - FolderPageListBO 不含人数，文件夹行不展示人数；
+ * - 列表 / 统计接口只能按 folderId 精确过滤，无法查询「未归入文件夹」，该节点暂不展示，
+ *   后端补充查询参数后在此恢复节点，并在 utils.toUserFilter 中透传。
  *
  * @param props - 组件属性
  * @param props.totalCount - 「全部」人数
- * @param props.unfiledCount - 「未归入文件夹」人数
  * @param props.folders - 文件夹
+ * @param props.loading - 加载中
  * @param props.selectedFolderId - 选中文件夹
  * @param props.keyword - 文件夹关键字
  * @param props.onKeywordChange - 关键字变更
@@ -131,8 +134,8 @@ function FolderRow({ folder, selected, onSelect, onRename, onDelete }: FolderRow
  */
 export function FolderPanel({
 	totalCount,
-	unfiledCount,
 	folders,
+	loading,
 	selectedFolderId,
 	keyword,
 	onKeywordChange,
@@ -167,33 +170,28 @@ export function FolderPanel({
 					level={0}
 					title="全部"
 					count={totalCount}
-					selected={selectedFolderId === YEARLY_REPORT_FOLDER_ALL}
+					selected={selectedFolderId === FOLDER_ALL}
 					showSwitcher
 					expanded={expanded}
 					onToggle={() => setExpanded((prev) => !prev)}
-					onClick={() => onSelect(YEARLY_REPORT_FOLDER_ALL)}
+					onClick={() => onSelect(FOLDER_ALL)}
 				/>
-				{expanded ? (
-					<>
-						<TreeRow
-							level={1}
-							title="未归入文件夹"
-							count={unfiledCount}
-							selected={selectedFolderId === YEARLY_REPORT_FOLDER_UNFILED}
-							showSwitcher
-							onClick={() => onSelect(YEARLY_REPORT_FOLDER_UNFILED)}
-						/>
-						{folders.map((folder) => (
+				{expanded
+					? folders.map((folder) => (
 							<FolderRow
-								key={folder.folderId}
+								key={folder.id}
 								folder={folder}
-								selected={selectedFolderId === folder.folderId}
+								selected={selectedFolderId === folder.id}
 								onSelect={onSelect}
 								onRename={onRename}
 								onDelete={onDelete}
 							/>
-						))}
-					</>
+						))
+					: null}
+				{expanded && loading && !folders.length ? (
+					<div className="flex justify-center py-3">
+						<Spin size="small" />
+					</div>
 				) : null}
 			</div>
 		</div>

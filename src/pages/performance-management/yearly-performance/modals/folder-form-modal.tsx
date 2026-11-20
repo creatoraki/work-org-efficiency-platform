@@ -1,21 +1,21 @@
-import type { YearlyReportCascaderOption } from "#src/api/performance-management/yearly-performance";
 import type { Dayjs } from "dayjs";
+import type { CascaderOption } from "../constants";
 
 import { Cascader, DatePicker, Form, Input } from "antd";
 import { Calendar } from "lucide-react";
 import { useEffect } from "react";
-import { formatDateWithWeekday } from "../utils";
+import { findCascaderLabels, formatDateWithWeekday } from "../utils";
 import { FormModalShell } from "./form-modal-shell";
 import { MODAL_FORM_PROPS } from "./modal-form-props";
 
-/** 新增 / 编辑文件夹表单值 */
+/** 新增 / 编辑文件夹表单值（字段对应 AppraisalFolderAddForm） */
 export interface FolderFormValues {
-	/** 所属组织级联路径 */
+	/** 所属组织级联路径（组织 code），末级 → belongToOrgCode */
 	orgPath?: string[];
-	/** 述职日期 */
-	reportDate?: Dayjs;
-	/** 文件夹名称 */
-	folderName?: string;
+	/** 述职日期 → appraisalDate */
+	appraisalDate?: Dayjs;
+	/** 文件夹名称 → name */
+	name?: string;
 }
 
 interface FolderFormModalProps {
@@ -24,53 +24,32 @@ interface FolderFormModalProps {
 	/** 模式：新增 / 编辑（重命名） */
 	mode: "create" | "rename";
 	/** 所属组织级联选项 */
-	orgOptions: YearlyReportCascaderOption[];
+	orgOptions: CascaderOption[];
 	/** 默认所属组织路径（回显当前选中层级） */
 	defaultOrgPath?: string[];
 	/** 编辑时的原文件夹名称 */
-	defaultFolderName?: string;
+	defaultName?: string;
 	/** 提交中 */
 	confirmLoading?: boolean;
 	/** 提交 */
-	onSubmit: (values: Required<Pick<FolderFormValues, "folderName">> & FolderFormValues) => void;
+	onSubmit: (values: FolderFormValues & { name: string }) => void;
 	/** 取消 */
 	onCancel: () => void;
 }
 
 /**
- * 根据级联路径找到组织名称
+ * 新增 / 编辑文件夹弹窗（设计稿 08 / 14）
  *
- * @param options - 级联选项
- * @param path - 级联路径
- * @returns 末级组织名称
- */
-function findOrgLabel(options: YearlyReportCascaderOption[], path?: string[]) {
-	let level = options;
-	let label = "";
-	for (const value of path ?? []) {
-		const hit = level.find((option) => option.value === value);
-		if (!hit) {
-			return "";
-		}
-		label = hit.label;
-		level = hit.children ?? [];
-	}
-	return label;
-}
-
-/**
- * 新增 / 编辑文件夹弹窗
- *
- * 新增：所属组织（级联，默认回显当前层级，只能选到可建文件夹的二级组织）、述职日期、文件夹名称；
- * 选择组织和日期后，若名称未手动修改，按「组织名 + MM-DD 周X」自动生成建议名称。
- * 编辑：仅修改文件夹名称。
+ * 新增：所属组织（级联，默认回显当前层级）、述职日期、文件夹名称；
+ * 选择组织和日期后，若名称未手动修改，按「组织名 + MM-DD 周X」自动生成建议名称（如「杭州区域公司12-12 周四」）。
+ * 编辑：仅修改文件夹名称（后端修改接口要求回传原述职日期，由页面补齐）。
  *
  * @param props - 组件属性
  * @param props.open - 是否打开
  * @param props.mode - 模式：新增 / 编辑（重命名）
  * @param props.orgOptions - 所属组织级联选项
- * @param props.defaultOrgPath - 默认所属组织路径（回显当前选中层级）
- * @param props.defaultFolderName - 编辑时的原文件夹名称
+ * @param props.defaultOrgPath - 默认所属组织路径
+ * @param props.defaultName - 编辑时的原文件夹名称
  * @param props.confirmLoading - 提交中
  * @param props.onSubmit - 提交
  * @param props.onCancel - 取消
@@ -83,7 +62,7 @@ export function FolderFormModal({
 	mode,
 	orgOptions,
 	defaultOrgPath,
-	defaultFolderName,
+	defaultName,
 	confirmLoading,
 	onSubmit,
 	onCancel,
@@ -97,23 +76,23 @@ export function FolderFormModal({
 		form.resetFields();
 		form.setFieldsValue({
 			orgPath: defaultOrgPath?.length ? defaultOrgPath : undefined,
-			folderName: mode === "rename" ? defaultFolderName : undefined,
+			name: mode === "rename" ? defaultName : undefined,
 		});
-	}, [open, mode, defaultOrgPath, defaultFolderName, form]);
+	}, [open, mode, defaultOrgPath, defaultName, form]);
 
 	/** 组织或日期变化时，名称未被手动修改则自动填充建议名称 */
 	const handleValuesChange = (changed: Partial<FolderFormValues>, all: FolderFormValues) => {
-		if (mode !== "create" || !("orgPath" in changed || "reportDate" in changed)) {
+		if (mode !== "create" || !("orgPath" in changed || "appraisalDate" in changed)) {
 			return;
 		}
-		if (form.isFieldTouched("folderName")) {
+		if (form.isFieldTouched("name")) {
 			return;
 		}
-		const orgName = findOrgLabel(orgOptions, all.orgPath);
-		if (orgName && all.reportDate) {
+		const orgName = findCascaderLabels(orgOptions, all.orgPath).pop();
+		if (orgName && all.appraisalDate) {
 			form.setFieldValue(
-				"folderName",
-				`${orgName}${formatDateWithWeekday(all.reportDate.format("YYYY-MM-DD"))}`,
+				"name",
+				`${orgName}${formatDateWithWeekday(all.appraisalDate, "MM-DD")}`,
 			);
 		}
 	};
@@ -124,41 +103,34 @@ export function FolderFormModal({
 			title={mode === "create" ? "新增文件夹" : "编辑"}
 			confirmLoading={confirmLoading}
 			onCancel={onCancel}
-			onOk={async () => {
-				const values = await form.validateFields();
-				onSubmit({ ...values, folderName: values.folderName?.trim() ?? "" });
-			}}
+			// 校验失败由表单项就地提示，submit 不会抛出未处理的 Promise 异常
+			onOk={() => form.submit()}
 		>
-			<Form form={form} {...MODAL_FORM_PROPS} onValuesChange={handleValuesChange}>
+			<Form
+				form={form}
+				{...MODAL_FORM_PROPS}
+				onValuesChange={handleValuesChange}
+				onFinish={(values) => onSubmit({ ...values, name: values.name?.trim() ?? "" })}
+			>
 				{mode === "create" ? (
 					<>
 						<Form.Item
 							label="所属组织"
 							name="orgPath"
-							rules={[
-								{ required: true, message: "请选择所属组织" },
-								{
-									validator: (_, value?: string[]) =>
-										!value || value.length >= 2
-											? Promise.resolve()
-											: Promise.reject(
-													new Error(
-														"文件夹只能建在集团 / 地区公司 / 业务集团下的组织",
-													),
-												),
-								},
-							]}
+							rules={[{ required: true, message: "请选择所属组织" }]}
 						>
 							<Cascader
 								placeholder="请选择"
 								options={orgOptions}
+								changeOnSelect
+								showSearch
 								displayRender={(labels) => labels.join("/")}
 								allowClear={false}
 							/>
 						</Form.Item>
 						<Form.Item
 							label="述职日期"
-							name="reportDate"
+							name="appraisalDate"
 							rules={[{ required: true, message: "请选择述职日期" }]}
 						>
 							<DatePicker
@@ -176,7 +148,7 @@ export function FolderFormModal({
 				) : null}
 				<Form.Item
 					label="文件夹名称"
-					name="folderName"
+					name="name"
 					rules={[
 						{ required: true, whitespace: true, message: "请输入文件夹名称" },
 						{ max: 50, message: "文件夹名称不超过 50 个字" },

@@ -17,7 +17,7 @@ interface FormModalShellProps extends Pick<
 /**
  * 年终述职表单弹窗外壳
  *
- * 统一设计稿弹窗规格（12 / 14 / 17）：宽 626px；头部 18px 中粗标题 + 22px 圆形关闭图标，底部分隔线；
+ * 统一设计稿弹窗规格（11-20 版 08 / 11 / 14）：宽 626px；头部 18px 中粗标题 + 22px 圆形关闭图标，底部分隔线；
  * 主体上下 36px、左右 24px；底部 12px / 24px 内边距，按钮右对齐。
  *
  * @param props - 组件属性
@@ -53,7 +53,7 @@ export function FormModalShell({ title, children, ...rest }: FormModalShellProps
 				},
 			}}
 			classNames={{
-				// 关闭图标中心距顶部 26px、距右侧 37px（设计稿 12）
+				// 关闭图标中心距顶部 26px、距右侧 37px（设计稿 08）
 				content:
 					"[&_.ant-modal-close]:!end-[26px] [&_.ant-modal-close]:!top-[15px] [&_.ant-modal-close]:!size-[22px]",
 				header: "[&_.ant-modal-title]:!text-lg [&_.ant-modal-title]:!font-semibold [&_.ant-modal-title]:!leading-[25px] [&_.ant-modal-title]:!text-[#323233]",

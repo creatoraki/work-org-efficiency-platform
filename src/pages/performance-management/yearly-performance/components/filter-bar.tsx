@@ -1,11 +1,10 @@
-import type { YearlyReportCascaderOption } from "#src/api/performance-management/yearly-performance";
 import type { ReactNode } from "react";
 import type { ReportFilterValues } from "../types";
 
 import { cn } from "#src/utils";
 import { Button, Cascader, DatePicker, Input, Select } from "antd";
 import { Clock } from "lucide-react";
-import { YEARLY_REPORT_STATUS_OPTIONS } from "../constants";
+import { APPRAISAL_STATUS_OPTIONS, MANAGER_CATEGORY_OPTIONS } from "../constants";
 import styles from "../index.module.css";
 
 interface LabeledFieldProps {
@@ -47,9 +46,7 @@ function LabeledField({ label, children, className }: LabeledFieldProps) {
 interface FilterBarProps {
 	/** 表单值 */
 	value: ReportFilterValues;
-	/** 管理者类别选项 */
-	managerCategoryOptions: YearlyReportCascaderOption[];
-	/** 紧凑模式：两列布局，查询 / 重置另起一行右对齐（设计稿 18） */
+	/** 紧凑模式：两列布局，查询 / 重置另起一行右对齐（设计稿 15） */
 	compact?: boolean;
 	/** 表单值变更 */
 	onChange: (value: ReportFilterValues) => void;
@@ -62,13 +59,12 @@ interface FilterBarProps {
 /**
  * 筛选区
  *
- * 宽屏：员工姓名 / 管理者类别 / 述职状态等分剩余宽度，述职时间固定 320px，查询 / 重置跟随在后，间距 12px。
+ * 宽屏：员工姓名/工号 / 管理者类别 / 述职状态等分剩余宽度，述职日期固定 320px，查询 / 重置跟随在后，间距 12px。
  * 紧凑：两列网格，查询 / 重置另起一行右对齐。
  *
  * @param props - 组件属性
  * @param props.value - 表单值
- * @param props.managerCategoryOptions - 管理者类别选项
- * @param props.compact - 紧凑模式：两列布局，查询 / 重置另起一行右对齐（设计稿 18）
+ * @param props.compact - 紧凑模式：两列布局，查询 / 重置另起一行右对齐（设计稿 15）
  * @param props.onChange - 表单值变更
  * @param props.onSearch - 查询
  * @param props.onReset - 重置
@@ -76,25 +72,18 @@ interface FilterBarProps {
  *
  * @since 2026-11-16
  */
-export function FilterBar({
-	value,
-	managerCategoryOptions,
-	compact,
-	onChange,
-	onSearch,
-	onReset,
-}: FilterBarProps) {
+export function FilterBar({ value, compact, onChange, onSearch, onReset }: FilterBarProps) {
 	const patch = (partial: Partial<ReportFilterValues>) => onChange({ ...value, ...partial });
 
 	const fields = (
 		<>
-			<LabeledField label="员工姓名" className={compact ? undefined : "flex-1"}>
+			<LabeledField label="员工姓名/工号" className={compact ? undefined : "flex-1"}>
 				<Input
 					variant="borderless"
 					allowClear
 					placeholder="请输入"
-					value={value.employeeName}
-					onChange={(event) => patch({ employeeName: event.target.value })}
+					value={value.userName}
+					onChange={(event) => patch({ userName: event.target.value })}
 					onPressEnter={onSearch}
 				/>
 			</LabeledField>
@@ -104,9 +93,9 @@ export function FilterBar({
 					className="w-full"
 					placeholder="请选择"
 					changeOnSelect
-					options={managerCategoryOptions}
-					value={value.managerCategory}
-					onChange={(next) => patch({ managerCategory: next as string[] | undefined })}
+					options={MANAGER_CATEGORY_OPTIONS}
+					value={value.jobTypePath}
+					onChange={(next) => patch({ jobTypePath: next as string[] | undefined })}
 				/>
 			</LabeledField>
 			<LabeledField label="述职状态" className={compact ? undefined : "flex-1"}>
@@ -115,22 +104,21 @@ export function FilterBar({
 					className="w-full"
 					placeholder="请选择"
 					allowClear
-					options={YEARLY_REPORT_STATUS_OPTIONS}
-					value={value.status}
-					onChange={(status) => patch({ status })}
+					options={APPRAISAL_STATUS_OPTIONS}
+					value={value.appraisalStatus}
+					onChange={(appraisalStatus) => patch({ appraisalStatus })}
 				/>
 			</LabeledField>
-			<LabeledField label="述职时间" className={compact ? undefined : "w-[320px] shrink-0"}>
+			<LabeledField label="述职日期" className={compact ? undefined : "w-[320px] shrink-0"}>
 				<DatePicker.RangePicker
 					variant="borderless"
 					className={cn("w-full", compact ? styles.rangeCompact : styles.rangeWide)}
-					showTime={{ format: "HH:mm" }}
-					format="YYYY-MM-DD HH:mm"
+					format="YYYY-MM-DD"
 					placeholder={["请选择", "请选择"]}
 					separator="至"
 					suffixIcon={<Clock className="size-3.5 text-[#909399]" strokeWidth={1.5} />}
-					value={value.reportTimeRange}
-					onChange={(range) => patch({ reportTimeRange: range })}
+					value={value.appraisalDateRange}
+					onChange={(range) => patch({ appraisalDateRange: range })}
 				/>
 			</LabeledField>
 		</>

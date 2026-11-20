@@ -1,10 +1,10 @@
-import { YearlyReportStatus } from "#src/api/performance-management/yearly-performance";
+import { AppraisalStatus } from "#src/api/performance-management/yearly-performance";
 import { cn } from "#src/utils";
-import { YEARLY_REPORT_STATUS_META } from "../constants";
+import { APPRAISAL_STATUS_META } from "../constants";
 
 interface StatusTagProps {
 	/** 述职状态 */
-	status: YearlyReportStatus;
+	status: AppraisalStatus;
 	/** 额外样式 */
 	className?: string;
 }
@@ -12,7 +12,8 @@ interface StatusTagProps {
 /**
  * 述职状态标签
  *
- * 24px 高、12px 字号、左右 8px 内边距；「述职中」带 6px 实心圆点 + 1px 浅色光圈，表示录音进行中。
+ * 24px 高、12px 字号、左右 8px 内边距；「述职中」带 6px 实心圆点 + 呼吸动态光圈（设计稿 22），
+ * 表示录音进行中；系统开启「减少动态效果」时只保留静态圆点。
  *
  * @param props - 组件属性
  * @param props.status - 述职状态
@@ -22,7 +23,7 @@ interface StatusTagProps {
  * @since 2026-11-16
  */
 export function StatusTag({ status, className }: StatusTagProps) {
-	const meta = YEARLY_REPORT_STATUS_META[status];
+	const meta = APPRAISAL_STATUS_META[status] ?? APPRAISAL_STATUS_META[AppraisalStatus.PENDING];
 	return (
 		<span
 			className={cn(
@@ -31,12 +32,17 @@ export function StatusTag({ status, className }: StatusTagProps) {
 			)}
 			style={{ color: meta.color, backgroundColor: meta.bgColor }}
 		>
-			{status === YearlyReportStatus.IN_PROGRESS ? (
-				<span
-					className="mx-px size-1.5 rounded-full"
-					style={{ backgroundColor: meta.color, boxShadow: `0 0 0 1px ${meta.color}66` }}
-					aria-hidden
-				/>
+			{status === AppraisalStatus.IN_PROGRESS ? (
+				<span className="relative mx-px flex size-1.5" aria-hidden>
+					<span
+						className="absolute inline-flex size-full rounded-full opacity-60 motion-safe:animate-ping"
+						style={{ backgroundColor: meta.color }}
+					/>
+					<span
+						className="relative inline-flex size-1.5 rounded-full"
+						style={{ backgroundColor: meta.color }}
+					/>
+				</span>
 			) : null}
 			{meta.label}
 		</span>
